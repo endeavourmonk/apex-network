@@ -1,0 +1,41 @@
+1. Users:
+    - GET: /users?username={username}
+    - POST: /users
+    - PUT: /users/{userID}
+    - PATCH: /users/{userID}
+    - DELETE: /users/{userID}
+
+2. Posts:
+    - GET: /posts?userID={userID}
+    - POST: /posts
+    - PUT: /posts/{postID}
+    - PATCH: /posts/{postID}
+    - DELETE: /posts/{postID}
+
+3. Connections:
+    - GET: /connections?user1ID={user1ID}&user2ID={user2ID}
+    - POST: /connections
+    - PUT: /connections/{connectionID}
+    - PATCH: /connections/{connectionID}
+    - DELETE: /connections/{connectionID}
+
+4. Jobs:
+    - GET: /jobs?userID={userID}
+    - POST: /jobs
+    - PUT: /jobs/{jobID}
+    - PATCH: /jobs/{jobID}
+    - DELETE: /jobs/{jobID}
+
+5. Applications:
+    - GET: /applications?jobID={jobID}&userID={userID}
+    - POST: /applications
+    - PUT: /applications/{applicationID}
+    - PATCH: /applications/{applicationID}
+    - DELETE: /applications/{applicationID}
+
+6. Tests:
+    - GET: /tests?userID={userID}
+    - POST: /tests
+    - PUT: /tests/{testID}
+    - PATCH: /tests/{testID}
+    - DELETE: /tests/{testID}

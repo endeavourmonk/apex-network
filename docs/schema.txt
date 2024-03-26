@@ -1,0 +1,53 @@
+CREATE TABLE Users (
+    UserID INT PRIMARY KEY,
+    UserName VARCHAR(100),
+    UserEmail VARCHAR(100),
+    UserType ENUM('Developer', 'Recruiter'),
+    UserStatus ENUM('Active', 'Inactive'),
+    UserLevel INT
+);
+
+CREATE TABLE Posts (
+    PostID INT PRIMARY KEY,
+    UserID INT,
+    PostContent TEXT,
+    PostType ENUM('Post', 'Job'),
+    PostDate DATETIME,
+    FOREIGN KEY (UserID) REFERENCES Users(UserID)
+    PhotoURL STRING
+);
+
+CREATE TABLE Connections (
+    ConnectionID INT PRIMARY KEY,
+    Requester INT,
+    Requestee INT,
+    ConnectionStatus ENUM('Pending', 'Accepted', 'Rejected'),
+    FOREIGN KEY (Requester) REFERENCES Users(UserID),
+    FOREIGN KEY (Requestee) REFERENCES Users(UserID)
+);
+
+CREATE TABLE Jobs (
+    JobID INT PRIMARY KEY,
+    UserID INT,
+    JobTitle VARCHAR(100),
+    JobDescription TEXT,
+    JobDate DATETIME,
+    FOREIGN KEY (UserID) REFERENCES Users(UserID)
+);
+
+CREATE TABLE Applications (
+    ApplicationID INT PRIMARY KEY,
+    JobID INT,
+    Applicant INT,
+    ApplicationStatus ENUM('Pending', 'Accepted', 'Rejected'),
+    FOREIGN KEY (JobID) REFERENCES Jobs(JobID),
+    FOREIGN KEY (Applicant) REFERENCES Users(UserID)
+);
+
+CREATE TABLE Tests (
+    TestID INT PRIMARY KEY,
+    UserID INT,
+    TestScore INT,
+    TestDate DATETIME,
+    FOREIGN KEY (UserID) REFERENCES Users(UserID)
+);
