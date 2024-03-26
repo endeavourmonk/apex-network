@@ -1,0 +1,5 @@
+#!/bin/sh
+. ".husky/_/husky.sh"
+
+# Run ESLint
+yarn lint
