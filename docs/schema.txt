@@ -5,6 +5,7 @@ CREATE TABLE Users (
     UserType ENUM('Developer', 'Recruiter'),
     UserStatus ENUM('Active', 'Inactive'),
     UserLevel INT
+    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE Posts (

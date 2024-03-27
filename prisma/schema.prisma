@@ -1,0 +1,102 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+model User {
+  id          Int           @id @default(autoincrement())
+  email       String        @unique @db.VarChar(50)
+  name        String?
+  UserType    UserType
+  UserStatus  UserStatus
+  UserLevel   Int
+  CreatedAt   DateTime      @default(now())
+  Posts       Posts[]
+  Connections Connections[]
+
+  Jobs         Jobs[]
+  Applications Applications[]
+
+  requesterUser Connections[] @relation("RequesterToUsers")
+  requesteeUser Connections[] @relation("RequesteeToUsers")
+}
+
+enum UserType {
+  Developer
+  Recruiter
+  Admin
+}
+
+enum UserStatus {
+  Active
+  Inactive
+}
+
+model Posts {
+  PostID      Int      @id
+  UserID      Int
+  PostContent String
+  PostType    PostType
+  PostDate    DateTime
+  PhotoURL    String?
+
+  User   User? @relation(fields: [userId], references: [id])
+  userId Int?
+}
+
+enum PostType {
+  Post
+  Job
+}
+
+model Connections {
+  ConnectionID     Int              @id
+  Requester        Int
+  Requestee        Int
+  ConnectionStatus ConnectionStatus
+  requesterUser    User             @relation("RequesterToUsers", fields: [Requester], references: [id])
+  requesteeUser    User             @relation("RequesteeToUsers", fields: [Requestee], references: [id])
+  Users            User?            @relation(fields: [usersUserID], references: [id])
+  usersUserID      Int?
+}
+
+enum ConnectionStatus {
+  Pending
+  Accepted
+  Rejected
+}
+
+model Jobs {
+  JobID          Int            @id
+  UserID         Int
+  JobTitle       String         @db.VarChar(100)
+  JobDescription String
+  JobDate        DateTime
+  user           User           @relation(fields: [UserID], references: [id])
+  applications   Applications[]
+}
+
+model Applications {
+  ApplicationID     Int               @id
+  JobID             Int
+  Applicant         Int
+  ApplicationStatus ApplicationStatus
+  job               Jobs              @relation(fields: [JobID], references: [JobID])
+  user              User              @relation(fields: [Applicant], references: [id])
+}
+
+enum ApplicationStatus {
+  Pending
+  Accepted
+  Rejected
+}
