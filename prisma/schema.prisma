@@ -19,7 +19,7 @@ model User {
   name        String?
   UserType    UserType
   UserStatus  UserStatus
-  UserLevel   Int
+  UserLevel   Int           @default(1)
   CreatedAt   DateTime      @default(now())
   Posts       Posts[]
   Connections Connections[]
