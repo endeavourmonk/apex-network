@@ -1,4 +1,8 @@
-// import { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction } from 'express';
 
-// module.exports = (fn) => (req: Request, res: Response, next) =>
-//   fn(req, res, next).catch(next);
+const handleAsync =
+  (fn: (req: Request, res: Response, next: NextFunction) => Promise<unknown>) =>
+  (req: Request, res: Response, next: NextFunction) =>
+    fn(req, res, next).catch(next);
+
+export default handleAsync;

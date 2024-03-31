@@ -1,38 +1,35 @@
 import express, { Request, Response, NextFunction } from 'express';
 import { container } from 'tsyringe';
 import { UserService } from '../services/userService.ts';
+import handleAsync from '../utils/handleAsync.ts';
 
 const router = express.Router();
 const userService = container.resolve(UserService);
 
-const middlewareX = (req: Request, res: Response, next: NextFunction) => {
-  console.log('mid');
-  next();
-};
+router.get('/', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const users = await userService.getAll();
+    res.json(users);
+  } catch (err) {
+    next(err);
+  }
+});
 
 router.get(
-  '/',
-  middlewareX,
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const users = await userService.getAll();
-      res.json(users);
-    } catch (err) {
-      next(err);
-    }
-  },
+  '/:id',
+  handleAsync(async (req: Request, res: Response) => {
+    const user = await userService.getById(Number(req.params.id));
+    res.json(user);
+  }),
 );
 
-router.get('/:id', async (req: Request, res: Response) => {
-  const user = await userService.getById(Number(req.params.id));
-  // if (!user) next();
-  res.json(user);
-});
-
-router.post('/', async (req: Request, res: Response) => {
-  const newUser = await userService.create(req.body);
-  res.json(newUser);
-});
+router.post(
+  '/',
+  handleAsync(async (req: Request, res: Response) => {
+    const newUser = await userService.create(req.body);
+    res.json(newUser);
+  }),
+);
 
 router.put('/:id', async (req: Request, res: Response) => {
   const updatedUser = await userService.update(Number(req.params.id), req.body);
