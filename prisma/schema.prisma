@@ -21,11 +21,11 @@ model User {
   UserStatus  UserStatus
   UserLevel   Int           @default(1)
   CreatedAt   DateTime      @default(now())
-  Posts       Posts[]
+  Posts       Post[]
   Connections Connections[]
 
-  Jobs         Jobs[]
-  Applications Applications[]
+  Jobs         Job[]
+  Applications Application[]
 
   requesterUser Connections[] @relation("RequesterToUsers")
   requesteeUser Connections[] @relation("RequesteeToUsers")
@@ -42,12 +42,15 @@ enum UserStatus {
   Inactive
 }
 
-model Posts {
-  PostID      Int      @id
+model Post {
+  PostID      Int      @id @default(autoincrement())
   UserID      Int
+  PostTitle   String
+  isUpdated   Boolean  @default(false)
+  updatedAt   DateTime @updatedAt
+  PostDate    DateTime
   PostContent String
   PostType    PostType
-  PostDate    DateTime
   PhotoURL    String?
 
   User   User? @relation(fields: [userId], references: [id])
@@ -76,22 +79,22 @@ enum ConnectionStatus {
   Rejected
 }
 
-model Jobs {
-  JobID          Int            @id
+model Job {
+  JobID          Int           @id
   UserID         Int
-  JobTitle       String         @db.VarChar(100)
+  JobTitle       String        @db.VarChar(100)
   JobDescription String
   JobDate        DateTime
-  user           User           @relation(fields: [UserID], references: [id])
-  applications   Applications[]
+  user           User          @relation(fields: [UserID], references: [id])
+  applications   Application[]
 }
 
-model Applications {
+model Application {
   ApplicationID     Int               @id
   JobID             Int
   Applicant         Int
   ApplicationStatus ApplicationStatus
-  job               Jobs              @relation(fields: [JobID], references: [JobID])
+  job               Job               @relation(fields: [JobID], references: [JobID])
   user              User              @relation(fields: [Applicant], references: [id])
 }
 
