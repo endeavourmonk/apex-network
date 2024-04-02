@@ -1,14 +1,16 @@
 import { PrismaClient, Post } from '@prisma/client';
 import { PostRepository } from './postRepository.interface';
-import { injectable } from 'tsyringe';
+import { injectable, inject } from 'tsyringe';
 
 @injectable()
 export class PostRepositoryPrisma implements PostRepository {
-  private prisma: PrismaClient;
+  // private prisma: PrismaClient;
 
-  constructor() {
-    this.prisma = new PrismaClient();
-  }
+  // constructor() {
+  //   this.prisma = new PrismaClient();
+  // }
+
+  constructor(@inject('PrismaClient') private prisma: PrismaClient) {}
 
   async getAll(): Promise<Post[]> {
     return this.prisma.post.findMany();
