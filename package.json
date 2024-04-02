@@ -7,8 +7,10 @@
   "author": "Ujjawal, Pratham",
   "license": "MIT",
   "private": true,
+  "type": "module",
   "scripts": {
-    "start": "nodemon src/index.ts",
+    "start": "node --loader ts-node/esm src/index.ts",
+    "start:watch": "nodemon --watch src --ext ts --exec npm run start",
     "lint": "lint-staged"
   },
   "husky": {
@@ -34,10 +36,15 @@
     "lint-staged": "^15.2.2",
     "nodemon": "^3.1.0",
     "prettier": "^3.2.5",
+    "prisma": "^5.11.0",
     "ts-node": "^10.9.2",
-    "typescript": "*"
+    "typescript": "^5.4.3"
   },
   "dependencies": {
-    "express": "^4.19.2"
+    "@prisma/client": "^5.11.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "reflect-metadata": "^0.2.1",
+    "tsyringe": "^4.8.0"
   }
 }
