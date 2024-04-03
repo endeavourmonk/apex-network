@@ -6,6 +6,7 @@ import './utils/tsyringe.config.ts';
 
 import userRouter from './controllers/userController.ts';
 import postRouter from './controllers/postController.ts';
+import { globalErrorHandler } from './controllers/errorController.ts';
 
 const app = express();
 const PORT = process.env.PORT;
@@ -24,14 +25,7 @@ app.get('/', (req, res) => {
 });
 
 // global error handler
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  console.log('-----------------------GEH--------------------');
-  if (res.headersSent) {
-    return next(err);
-  }
-  res.status(500);
-  res.render('error', { error: err });
-});
+app.use(globalErrorHandler);
 
 app.listen(PORT, () => {
   console.log(`🖥  Server is running at http://localhost:${PORT}⛁`);
