@@ -1,7 +1,7 @@
 import { AppError } from '../utils/error';
-import express, { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction } from 'express';
 
-const sendErrorDev = (err: Error, res: Response) => {
+const sendErrorDev = (err: AppError, res: Response) => {
   res.status(err.statusCode).json({
     statusCode: err.statusCode,
     status: err.status,
@@ -11,33 +11,29 @@ const sendErrorDev = (err: Error, res: Response) => {
   });
 };
 
-const sendErrorProd = (err: Error, res: Response) => {
-  // operational trusted error: send to the client
-  if (err.isOperational) {
-    res.status(err.statusCode).json({
-      status: 'failed',
-      message: err.message,
-    });
-  } else {
-    // Programming or other error: don't send whole error, send generic message to client
-    console.error('ERROR: ', err);
-    res.status(500).json({
-      status: 'failed',
-      message: 'Something went wrong',
-    });
-  }
-};
+// const sendErrorProd = (err: Error, res: Response) => {
+//   // operational trusted error: send to the client
+//   if (err.isOperational) {
+//     res.status(err.statusCode).json({
+//       status: 'failed',
+//       message: err.message,
+//     });
+//   } else {
+//     // Programming or other error: don't send whole error, send generic message to client
+//     console.error('ERROR: ', err);
+//     res.status(500).json({
+//       status: 'failed',
+//       message: 'Something went wrong',
+//     });
+//   }
+// };
 
 export const globalErrorHandler = (
-  err: Error,
+  err: AppError,
   req: Request,
   res: Response,
   next: NextFunction,
 ) => {
   err.statusCode = err.statusCode || 500;
-  if (process.env.NODE_ENV === 'development') {
-    sendErrorDev(err, res);
-  } else if (process.env.NODE_ENV === 'production') {
-    sendErrorProd(err, res);
-  }
+  sendErrorDev(err, res);
 };
