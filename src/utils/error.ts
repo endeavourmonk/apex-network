@@ -1,4 +1,12 @@
-export class AppError extends Error {
+export interface AppErrorInterface {
+  statusCode: number;
+  status: string;
+  message: string;
+  isOperational: boolean;
+  stack?: string;
+}
+
+export class AppError extends Error implements AppErrorInterface {
   statusCode: number;
   status: string;
   isOperational: boolean;
