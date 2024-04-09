@@ -15,8 +15,8 @@ export class PostService implements IPostService {
   getById(PostID: number): Promise<Post | null> {
     return this.postRepository.getById(PostID);
   }
-  create(Posts: Omit<Post, 'PostID'>): Promise<Post> {
-    return this.postRepository.create(Posts);
+  create(Post: Omit<Post, 'PostID'>): Promise<Post> {
+    return this.postRepository.create(Post);
   }
   update(PostID: number, Post: Post): Promise<Post | null> {
     return this.postRepository.update(PostID, Post);

@@ -6,10 +6,10 @@ import './utils/tsyringe.config.ts';
 
 import userRouter from './controllers/userController.ts';
 import postRouter from './controllers/postController.ts';
-import { globalErrorHandler } from './controllers/errorController.ts';
+import { globalErrorHandler } from './utils/errorHandler.ts';
 
 const app = express();
-const PORT = process.env.PORT;
+const PORT = process.env.PORT ?? 3000;
 
 app.use(express.json({ limit: '10kb' }));
 
