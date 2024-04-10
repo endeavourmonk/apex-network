@@ -1,14 +1,15 @@
 import 'dotenv/config';
 import 'reflect-metadata';
-import express, { Request, Response, NextFunction } from 'express';
+import express from 'express';
 
 import './utils/tsyringe.config.ts';
 
 import userRouter from './controllers/userController.ts';
 import postRouter from './controllers/postController.ts';
+import { globalErrorHandler } from './utils/errorHandler.ts';
 
 const app = express();
-const PORT = process.env.PORT;
+const PORT = process.env.PORT ?? 3000;
 
 app.use(express.json({ limit: '10kb' }));
 
@@ -24,14 +25,7 @@ app.get('/', (req, res) => {
 });
 
 // global error handler
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  console.log('-----------------------GEH--------------------');
-  if (res.headersSent) {
-    return next(err);
-  }
-  res.status(500);
-  res.render('error', { error: err });
-});
+app.use(globalErrorHandler);
 
 app.listen(PORT, () => {
   console.log(`🖥  Server is running at http://localhost:${PORT}⛁`);

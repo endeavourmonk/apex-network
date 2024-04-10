@@ -2,6 +2,7 @@ import express, { Request, Response, NextFunction } from 'express';
 import { container } from 'tsyringe';
 import { UserService } from '../services/userService.ts';
 import handleAsync from '../utils/handleAsync.ts';
+import { AppError } from '../utils/error.ts';
 
 const router = express.Router();
 const userService = container.resolve(UserService);
@@ -9,7 +10,15 @@ const userService = container.resolve(UserService);
 router.get('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const users = await userService.getAll();
-    res.json(users);
+
+    if (!users.length) return next(new AppError(404, `No users found.`));
+
+    res.status(200).json({
+      results: users.length,
+      data: {
+        users,
+      },
+    });
   } catch (err) {
     next(err);
   }
@@ -17,9 +26,14 @@ router.get('/', async (req: Request, res: Response, next: NextFunction) => {
 
 router.get(
   '/:id',
-  handleAsync(async (req: Request, res: Response) => {
+  handleAsync(async (req: Request, res: Response, next: NextFunction) => {
     const user = await userService.getById(Number(req.params.id));
-    res.json(user);
+    if (!user) return next(new AppError(404, `No users found.`));
+    res.status(200).json({
+      data: {
+        user,
+      },
+    });
   }),
 );
 

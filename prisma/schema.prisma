@@ -59,7 +59,6 @@ model Post {
 
 enum PostType {
   Post
-  Job
 }
 
 model Connections {
@@ -80,7 +79,7 @@ enum ConnectionStatus {
 }
 
 model Job {
-  JobID          Int           @id
+  JobID          Int           @id @default(autoincrement())
   UserID         Int
   JobTitle       String        @db.VarChar(100)
   JobDescription String
