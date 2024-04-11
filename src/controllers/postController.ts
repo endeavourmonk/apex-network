@@ -6,14 +6,17 @@ import handleAsync from '../utils/handleAsync.ts';
 const router = express.Router();
 const postService = container.resolve(PostService);
 
-router.get('/', async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const posts = await postService.getAll();
-    res.json(posts);
-  } catch (err) {
-    next(err);
-  }
-});
+router.get(
+  '/',
+  handleAsync(async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const posts = await postService.getAll();
+      res.json(posts);
+    } catch (err) {
+      next(err);
+    }
+  }),
+);
 
 router.get(
   '/:id',
@@ -31,14 +34,23 @@ router.post(
   }),
 );
 
-router.put('/:id', async (req: Request, res: Response) => {
-  const updatedPost = await postService.update(Number(req.params.id), req.body);
-  res.json(updatedPost);
-});
+router.put(
+  '/:id',
+  handleAsync(async (req: Request, res: Response) => {
+    const updatedPost = await postService.update(
+      Number(req.params.id),
+      req.body,
+    );
+    res.json(updatedPost);
+  }),
+);
 
-router.delete('/:id', async (req: Request, res: Response) => {
-  const deleted = await postService.delete(Number(req.params.id));
-  res.json({ deleted });
-});
+router.delete(
+  '/:id',
+  handleAsync(async (req: Request, res: Response) => {
+    const deleted = await postService.delete(Number(req.params.id));
+    res.json({ deleted });
+  }),
+);
 
 export default router;
