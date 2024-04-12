@@ -7,28 +7,31 @@ import { AppError } from '../utils/error.ts';
 const router = express.Router();
 const userService = container.resolve(UserService);
 
-router.get('/', async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const users = await userService.getAll();
+router.get(
+  '/',
+  handleAsync(async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const users = await userService.getAll();
 
-    if (!users.length) return next(new AppError(404, `No users found.`));
+      if (!users.length) return next(new AppError(404, `No users found.`));
 
-    res.status(200).json({
-      results: users.length,
-      data: {
-        users,
-      },
-    });
-  } catch (err) {
-    next(err);
-  }
-});
+      res.status(200).json({
+        results: users.length,
+        data: {
+          users,
+        },
+      });
+    } catch (err) {
+      next(err);
+    }
+  }),
+);
 
 router.get(
   '/:id',
   handleAsync(async (req: Request, res: Response, next: NextFunction) => {
     const user = await userService.getById(Number(req.params.id));
-    if (!user) return next(new AppError(404, `No users found.`));
+    if (!user) return next(new AppError(404, `User not found.`));
     res.status(200).json({
       data: {
         user,
@@ -45,14 +48,23 @@ router.post(
   }),
 );
 
-router.put('/:id', async (req: Request, res: Response) => {
-  const updatedUser = await userService.update(Number(req.params.id), req.body);
-  res.json(updatedUser);
-});
+router.put(
+  '/:id',
+  handleAsync(async (req: Request, res: Response) => {
+    const updatedUser = await userService.update(
+      Number(req.params.id),
+      req.body,
+    );
+    res.json(updatedUser);
+  }),
+);
 
-router.delete('/:id', async (req: Request, res: Response) => {
-  const deleted = await userService.delete(Number(req.params.id));
-  res.json({ deleted });
-});
+router.delete(
+  '/:id',
+  handleAsync(async (req: Request, res: Response) => {
+    const deleted = await userService.delete(Number(req.params.id));
+    res.json({ deleted });
+  }),
+);
 
 export default router;
