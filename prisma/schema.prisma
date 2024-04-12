@@ -90,10 +90,12 @@ model Job {
 }
 
 model Application {
-  ApplicationID     Int               @id
+  ApplicationID     Int               @id @default(autoincrement())
   JobID             Int
   Applicant         Int
   ApplicationStatus ApplicationStatus
+  ResumeUrl         String
+  CvUrl             String
   job               Job               @relation(fields: [JobID], references: [JobID])
   user              User              @relation(fields: [Applicant], references: [id])
 }
