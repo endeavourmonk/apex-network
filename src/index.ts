@@ -7,6 +7,7 @@ import './utils/tsyringe.config.ts';
 import userRouter from './controllers/userController.ts';
 import postRouter from './controllers/postController.ts';
 import jobRouter from './controllers/jobController.ts';
+import applicationRouter from './controllers/applicationController.ts';
 import { globalErrorHandler } from './utils/errorHandler.ts';
 
 const app = express();
@@ -19,6 +20,7 @@ console.log(process.env.PORT);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/posts', postRouter);
 app.use('/api/v1/jobs', jobRouter);
+app.use('/api/v1/applications', applicationRouter);
 
 app.get('/', (req, res) => {
   res.status(200).json({
