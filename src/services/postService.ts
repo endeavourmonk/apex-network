@@ -1,7 +1,7 @@
-import { IPostService } from './postService.interface';
 import { Post } from '@prisma/client';
-import { PostRepository } from '../repositories/postRepository.interface';
 import { inject, injectable } from 'tsyringe';
+import { PostRepository } from '../repositories/postRepository.interface.ts';
+import { IPostService } from './postService.interface.ts';
 
 @injectable()
 export class PostService implements IPostService {

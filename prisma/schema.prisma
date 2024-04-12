@@ -70,6 +70,7 @@ model Connections {
   requesteeUser    User             @relation("RequesteeToUsers", fields: [Requestee], references: [id])
   Users            User?            @relation(fields: [usersUserID], references: [id])
   usersUserID      Int?
+  requestedTime    DateTime         @default(now())
 }
 
 enum ConnectionStatus {

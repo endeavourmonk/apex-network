@@ -11,7 +11,10 @@
   "scripts": {
     "start": "node --loader ts-node/esm src/index.ts",
     "start:watch": "nodemon --watch src --ext ts --exec npm run start",
-    "lint": "lint-staged"
+    "start:prod": "NODE_ENV=production nodemon --watch src --ext ts --exec npm run start",
+    "lint": "lint-staged",
+    "build": "tsc --build",
+    "clean": "tsc --build --clean"
   },
   "husky": {
     "hooks": {

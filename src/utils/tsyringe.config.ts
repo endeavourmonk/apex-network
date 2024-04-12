@@ -1,13 +1,13 @@
 import { container } from 'tsyringe';
 import { PrismaClient } from '@prisma/client';
-import { UserRepository } from '../repositories/userRepository.interface';
+import { UserRepository } from '../repositories/userRepository.interface.ts';
 import { UserRepositoryPrisma } from '../repositories/userRepositoryPrisma.ts';
 import { IUserService } from '../services/userService.interface.ts';
 import { UserService } from '../services/userService.ts';
 import { PostRepository } from '../repositories/postRepository.interface.ts';
 import { PostRepositoryPrisma } from '../repositories/postRepositoryPrisma.ts';
-import { PostService } from '../services/postService.ts';
 import { IPostService } from '../services/postService.interface.ts';
+import { PostService } from '../services/postService.ts';
 import { JobRepository } from '../repositories/jobRepository.interface.ts';
 import { JobRepositoryPrisma } from '../repositories/jobRepository.prisma.ts';
 import { IJobService } from '../services/jobService.interface.ts';

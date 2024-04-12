@@ -31,7 +31,7 @@ router.get(
   '/:id',
   handleAsync(async (req: Request, res: Response, next: NextFunction) => {
     const user = await userService.getById(Number(req.params.id));
-    if (!user) return next(new AppError(404, `No users found.`));
+    if (!user) return next(new AppError(404, `User not found.`));
     res.status(200).json({
       data: {
         user,
