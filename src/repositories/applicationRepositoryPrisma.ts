@@ -1,6 +1,6 @@
 import { PrismaClient, Application } from '@prisma/client';
 import { injectable, inject } from 'tsyringe';
-import { ApplicationRepository } from './applicationRepository.interface.ts';
+import { ApplicationRepository } from './applicationRepository.interface';
 
 @injectable()
 export class ApplicationRepositoryPrisma implements ApplicationRepository {

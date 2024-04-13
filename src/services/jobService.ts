@@ -1,7 +1,7 @@
 import { Job } from '@prisma/client';
 import { inject, injectable } from 'tsyringe';
-import { JobRepository } from '../repositories/jobRepository.interface.ts';
-import { IJobService } from './jobService.interface.ts';
+import { JobRepository } from '../repositories/jobRepository.interface';
+import { IJobService } from './jobService.interface';
 
 @injectable()
 export class JobService implements IJobService {

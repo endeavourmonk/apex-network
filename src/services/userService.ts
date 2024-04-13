@@ -1,7 +1,7 @@
 import { User } from '@prisma/client';
 import { inject, injectable } from 'tsyringe';
-import { UserRepository } from '../repositories/userRepository.interface.ts';
-import { IUserService } from './userService.interface.ts';
+import { UserRepository } from '../repositories/userRepository.interface';
+import { IUserService } from './userService.interface';
 
 @injectable()
 export class UserService implements IUserService {

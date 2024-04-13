@@ -1,8 +1,8 @@
 import express, { Request, Response, NextFunction } from 'express';
 import { container } from 'tsyringe';
-import { ApplicationService } from '../services/applicationService.ts';
-import handleAsync from '../utils/handleAsync.ts';
-import { AppError } from '../utils/error.ts';
+import { ApplicationService } from '../services/applicationService';
+import handleAsync from '../utils/handleAsync';
+import { AppError } from '../utils/error';
 
 const router = express.Router();
 const applicationService = container.resolve(ApplicationService);

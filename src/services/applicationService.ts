@@ -1,7 +1,7 @@
 import { inject, injectable } from 'tsyringe';
 import { Application } from '@prisma/client';
-import { ApplicationRepository } from '../repositories/applicationRepository.interface.ts';
-import { IApplicationService } from './applicationService.interface.ts';
+import { ApplicationRepository } from '../repositories/applicationRepository.interface';
+import { IApplicationService } from './applicationService.interface';
 
 @injectable()
 export class ApplicationService implements IApplicationService {

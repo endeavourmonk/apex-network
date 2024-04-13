@@ -2,13 +2,13 @@ import 'dotenv/config';
 import 'reflect-metadata';
 import express from 'express';
 
-import './utils/tsyringe.config.ts';
+import './utils/tsyringe.config';
 
-import userRouter from './controllers/userController.ts';
-import postRouter from './controllers/postController.ts';
-import jobRouter from './controllers/jobController.ts';
-import applicationRouter from './controllers/applicationController.ts';
-import { globalErrorHandler } from './utils/errorHandler.ts';
+import userRouter from './controllers/userController';
+import postRouter from './controllers/postController';
+import jobRouter from './controllers/jobController';
+import applicationRouter from './controllers/applicationController';
+import { globalErrorHandler } from './utils/errorHandler';
 
 const app = express();
 const PORT = process.env.PORT ?? 3000;

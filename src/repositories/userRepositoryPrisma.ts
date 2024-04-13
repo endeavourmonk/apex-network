@@ -1,6 +1,6 @@
 import { PrismaClient, User } from '@prisma/client';
 import { injectable, inject } from 'tsyringe';
-import { UserRepository } from './userRepository.interface.ts';
+import { UserRepository } from './userRepository.interface';
 
 @injectable()
 export class UserRepositoryPrisma implements UserRepository {
