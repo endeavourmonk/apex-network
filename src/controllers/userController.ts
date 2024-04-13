@@ -10,20 +10,16 @@ const userService = container.resolve(UserService);
 router.get(
   '/',
   handleAsync(async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const users = await userService.getAll();
+    const users = await userService.getAll();
 
-      if (!users.length) return next(new AppError(404, `No users found.`));
+    if (!users.length) return next(new AppError(404, `No users found.`));
 
-      res.status(200).json({
-        results: users.length,
-        data: {
-          users,
-        },
-      });
-    } catch (err) {
-      next(err);
-    }
+    res.status(200).json({
+      results: users.length,
+      data: {
+        users,
+      },
+    });
   }),
 );
 
