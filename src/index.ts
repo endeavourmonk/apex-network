@@ -57,7 +57,7 @@ app.get('/', (req, res) => {
         </style>
       </head>
       <body>
-        <h2>Welcome to the Home Page</h2>
+        <h2>Welcome to the Home Page LoggedIn</h2>
         <div>
           <p>Token: ${token as string}</p>
         </div>
