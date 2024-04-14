@@ -1,12 +1,12 @@
 import express, { Request, Response } from 'express';
 import handleAsync from '../utils/handleAsync.ts';
 import { OAuth2Client, TokenPayload } from 'google-auth-library';
-import * as jwt from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 const router = express.Router();
 const client = new OAuth2Client(
   process.env.CLIENT_ID,
   process.env.CLIENT_SECRET,
-  'http://localhost:8000',
+  'http://localhost:8000/auth/google/callback',
 );
 
 router.get(
@@ -36,9 +36,7 @@ router.get(
         expiresIn: '30m',
       }); // Adjust expiration time as needed
       console.log(user);
-      res.redirect(
-        `<span class="math-inline">\\{proces\\s\\.env\\.FRONTEND\\_URL\\}/success?token\\=</span>${accessToken}`,
-      ); // Redirect to frontend with JWT
+      res.redirect(`http://localhost:8000?token=${accessToken}`); // Redirect to frontend with JWT
     } catch (error) {
       console.error(error);
       res.status(500).send('Error authenticating with Google');
