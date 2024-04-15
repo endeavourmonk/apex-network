@@ -44,17 +44,16 @@ enum UserStatus {
 
 model Post {
   PostID      Int      @id @default(autoincrement())
-  UserID      Int
   PostTitle   String
   isUpdated   Boolean  @default(false)
   updatedAt   DateTime @updatedAt
-  PostDate    DateTime
+  PostDate    DateTime @default(now())
   PostContent String
   PostType    PostType
   PhotoURL    String?
 
-  User   User? @relation(fields: [userId], references: [id])
-  userId Int?
+  User   User @relation(fields: [userId], references: [id])
+  userId Int
 }
 
 enum PostType {

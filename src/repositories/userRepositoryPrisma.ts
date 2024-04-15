@@ -4,20 +4,23 @@ import { UserRepository } from './userRepository.interface';
 
 @injectable()
 export class UserRepositoryPrisma implements UserRepository {
-  // private prisma: PrismaClient;
-
-  // constructor() {
-  //   this.prisma = new PrismaClient();
-  // }
-
   constructor(@inject('PrismaClient') private prisma: PrismaClient) {}
 
   async getAll(): Promise<User[]> {
-    return this.prisma.user.findMany();
+    return this.prisma.user.findMany({
+      include: {
+        Posts: true,
+      },
+    });
   }
 
   async getById(id: number): Promise<User | null> {
-    return this.prisma.user.findUnique({ where: { id } });
+    return this.prisma.user.findUnique({
+      where: { id },
+      include: {
+        Posts: true,
+      },
+    });
   }
 
   async create(user: Omit<User, 'id'>): Promise<User> {

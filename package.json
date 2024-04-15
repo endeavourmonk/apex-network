@@ -9,11 +9,8 @@
   "private": true,
   "scripts": {
     "build": "tsc --build",
-    "start": "node ./dist/index.js",
+    "start": " NODE_ENV=production node ./dist/index.js",
     "start:dev": "nodemon ./src/index.ts",
-    "start1": "node --loader ts-node/esm src/index",
-    "start:watch": "nodemon --watch src --ext ts --exec npm run start",
-    "start:prod": "NODE_ENV=production nodemon --watch src --ext ts --exec npm run start",
     "lint": "lint-staged",
     "clean": "tsc --build --clean"
   },
