@@ -3,12 +3,14 @@ import { container } from 'tsyringe';
 import { ApplicationService } from '../services/applicationService';
 import handleAsync from '../utils/handleAsync';
 import { AppError } from '../utils/error';
+import { validateLogin } from '../middlewares/validateLogin';
 
 const router = express.Router();
 const applicationService = container.resolve(ApplicationService);
 
 router.get(
   '/',
+  validateLogin,
   handleAsync(async (req: Request, res: Response, next: NextFunction) => {
     try {
       const applications = await applicationService.getAll();

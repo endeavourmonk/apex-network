@@ -28,15 +28,16 @@ router.get(
       const { email, name, sub: googleId } = payload as TokenPayload;
 
       // Check if user exists in your database (optional)
+
       // Create user if necessary
 
       // Generate JWT
       const user = { email, name, googleId };
-      const accessToken = jwt.sign(user, process.env.JWT_SECRET as string, {
-        expiresIn: '30m',
+      const jwtAccessToken = jwt.sign(user, process.env.JWT_SECRET as string, {
+        expiresIn: process.env.JWT_EXPIRY_TIME,
       });
-      console.log(accessToken);
-      res.redirect(`http://localhost:8000?token=${accessToken}`); // Redirect to frontend with JWT
+      console.log(jwtAccessToken);
+      res.redirect(`http://localhost:8000?token=${jwtAccessToken}`); // Redirect to frontend with JWT
     } catch (error) {
       console.error(error);
       res.status(500).send('Error authenticating with Google');

@@ -6,11 +6,11 @@ import { UserRepository } from './userRepository.interface';
 export class UserRepositoryPrisma implements UserRepository {
   constructor(@inject('PrismaClient') private prisma: PrismaClient) {}
 
-  async getAll(): Promise<User[]> {
+  async getAll(filter?: object): Promise<User[]> {
+    const whereClause = filter ?? {};
+
     return this.prisma.user.findMany({
-      include: {
-        Posts: true,
-      },
+      where: whereClause,
     });
   }
 

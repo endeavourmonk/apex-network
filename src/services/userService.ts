@@ -9,8 +9,9 @@ export class UserService implements IUserService {
     @inject('UserRepository') private userRepository: UserRepository,
   ) {}
 
-  getAll(): Promise<User[]> {
-    return this.userRepository.getAll();
+  getAll(filter?: object): Promise<User[]> {
+    const whereClause = filter ?? {};
+    return this.userRepository.getAll(whereClause);
   }
 
   getById(id: number): Promise<User | null> {
