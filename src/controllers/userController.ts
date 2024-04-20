@@ -1,6 +1,6 @@
 import express, { Request, Response, NextFunction } from 'express';
 import { container } from 'tsyringe';
-import { UserService } from '../services/userService';
+import { UserService } from '../services/UserService';
 import handleAsync from '../utils/handleAsync';
 import { AppError } from '../utils/error';
 

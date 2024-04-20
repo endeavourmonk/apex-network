@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { container } from 'tsyringe';
 import jwt from 'jsonwebtoken';
 import { AppError } from '../utils/error';
-import { UserService } from '../services/userService';
+import { UserService } from '../services/UserService';
 
 const userService = container.resolve(UserService);
 
@@ -23,7 +23,7 @@ export const validateLogin = (
         console.log('err');
         return next(new AppError(400, `Invalid JWT.`));
       }
-      console.log(decoded.email);
+      // console.log(decoded.email);
       // verify that user exist in database
       // const filter = {
       //   email: decoded?.email,

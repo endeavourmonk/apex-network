@@ -14,6 +14,10 @@ export class UserRepositoryPrisma implements UserRepository {
     });
   }
 
+  async getByEmail(email: string): Promise<User | null> {
+    return this.prisma.user.findFirst({ where: { email } });
+  }
+
   async getById(id: number): Promise<User | null> {
     return this.prisma.user.findUnique({
       where: { id },
@@ -23,7 +27,11 @@ export class UserRepositoryPrisma implements UserRepository {
     });
   }
 
-  async create(user: Omit<User, 'id'>): Promise<User> {
+  // async create(user: Omit<User, 'id'>): Promise<User> {
+  //   return this.prisma.user.create({ data: user });
+  // }
+
+  async create(user: User): Promise<User> {
     return this.prisma.user.create({ data: user });
   }
 

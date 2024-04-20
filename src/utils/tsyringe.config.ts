@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 import { UserRepository } from '../repositories/userRepository.interface';
 import { UserRepositoryPrisma } from '../repositories/userRepositoryPrisma';
 import { IUserService } from '../services/userService.interface';
-import { UserService } from '../services/userService';
+import { UserService } from '../services/UserService';
 import { PostRepository } from '../repositories/postRepository.interface';
 import { PostRepositoryPrisma } from '../repositories/postRepositoryPrisma';
 import { IPostService } from '../services/postService.interface';
