@@ -10,20 +10,20 @@ export class JobRepositoryPrisma implements JobRepository {
     return this.prisma.job.findMany();
   }
 
-  async getById(JobID: number): Promise<Job | null> {
-    return this.prisma.job.findUnique({ where: { JobID } });
+  async getById(jobId: number): Promise<Job | null> {
+    return this.prisma.job.findUnique({ where: { jobId } });
   }
 
   async create(Job: Omit<Job, 'JobID'>): Promise<Job> {
     return this.prisma.job.create({ data: Job });
   }
 
-  async update(JobID: number, Jobs: Job): Promise<Job | null> {
-    return this.prisma.job.update({ where: { JobID }, data: Jobs });
+  async update(jobId: number, Jobs: Job): Promise<Job | null> {
+    return this.prisma.job.update({ where: { jobId }, data: Jobs });
   }
 
-  async delete(JobID: number): Promise<boolean> {
-    const deletedJobs = await this.prisma.job.delete({ where: { JobID } });
+  async delete(jobId: number): Promise<boolean> {
+    const deletedJobs = await this.prisma.job.delete({ where: { jobId } });
     return !!deletedJobs;
   }
 }

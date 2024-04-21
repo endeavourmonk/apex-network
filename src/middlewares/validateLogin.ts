@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { container } from 'tsyringe';
 import jwt from 'jsonwebtoken';
 import { AppError } from '../utils/error';
-import { UserService } from '../services/UserService';
+import { UserService } from '../services/userService';
 
 const userService = container.resolve(UserService);
 

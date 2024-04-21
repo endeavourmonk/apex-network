@@ -10,29 +10,29 @@ export class ApplicationRepositoryPrisma implements ApplicationRepository {
     return this.prisma.application.findMany();
   }
 
-  async getById(ApplicationID: number): Promise<Application | null> {
-    return this.prisma.application.findUnique({ where: { ApplicationID } });
+  async getById(applicationId: number): Promise<Application | null> {
+    return this.prisma.application.findUnique({ where: { applicationId } });
   }
 
   async create(
-    Application: Omit<Application, 'ApplicationID'>,
+    Application: Omit<Application, 'applicationId'>,
   ): Promise<Application> {
     return this.prisma.application.create({ data: Application });
   }
 
   async update(
-    ApplicationID: number,
+    applicationId: number,
     Application: Application,
   ): Promise<Application | null> {
     return this.prisma.application.update({
-      where: { ApplicationID },
+      where: { applicationId },
       data: Application,
     });
   }
 
-  async delete(ApplicationID: number): Promise<boolean> {
+  async delete(applicationId: number): Promise<boolean> {
     const deletedApplications = await this.prisma.application.delete({
-      where: { ApplicationID },
+      where: { applicationId },
     });
     return !!deletedApplications;
   }

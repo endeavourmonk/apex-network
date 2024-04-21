@@ -22,28 +22,19 @@ export class UserService implements IUserService {
     return this.userRepository.getById(id);
   }
 
-  // create(user: Omit<User, 'id'>): Promise<User> {
-  //   return this.userRepository.create(user);
-  // }
-
   create(user: User): Promise<User> {
     return this.userRepository.create(user);
   }
 
-  registerUser(email: string, name: string): Promise<User> {
-    const newUser: User = {
-      username: email.split('@')[0],
+  registerUser(email: string, name: string, picture: string): Promise<User> {
+    const newUser: Partial<User> = {
+      username: email.split('@')[0] as string,
       email: email,
       name: name,
-      id: 0,
-      UserType: 'Developer',
-      UserStatus: 'Active',
-      UserLevel: 0,
-      CreatedAt: new Date(),
+      photoUrl: picture,
     };
 
-    console.log(newUser);
-    return this.userRepository.create(newUser);
+    return this.userRepository.create(newUser as User);
   }
 
   update(id: number, user: User): Promise<User | null> {

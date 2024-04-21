@@ -2,11 +2,11 @@ import { Application } from '@prisma/client';
 
 export interface ApplicationRepository {
   getAll(): Promise<Application[]>;
-  getById(ApplicationID: number): Promise<Application | null>;
-  create(Application: Omit<Application, 'ApplicationID'>): Promise<Application>;
+  getById(applicationId: number): Promise<Application | null>;
+  create(Application: Omit<Application, 'applicationId'>): Promise<Application>;
   update(
-    ApplicationID: number,
+    applicationId: number,
     Application: Application,
   ): Promise<Application | null>;
-  delete(ApplicationID: number): Promise<boolean>;
+  delete(applicationId: number): Promise<boolean>;
 }

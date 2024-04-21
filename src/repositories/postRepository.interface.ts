@@ -2,8 +2,8 @@ import { Post } from '@prisma/client';
 
 export interface PostRepository {
   getAll(): Promise<Post[]>;
-  getById(PostID: number): Promise<Post | null>;
-  create(Post: Omit<Post, 'PostID'>): Promise<Post>;
-  update(PostID: number, Posts: Post): Promise<Post | null>;
-  delete(PostID: number): Promise<boolean>;
+  getById(postId: number): Promise<Post | null>;
+  create(Post: Omit<Post, 'postId'>): Promise<Post>;
+  update(postId: number, Posts: Post): Promise<Post | null>;
+  delete(postId: number): Promise<boolean>;
 }

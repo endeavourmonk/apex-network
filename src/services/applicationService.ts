@@ -13,21 +13,21 @@ export class ApplicationService implements IApplicationService {
   getAll(): Promise<Application[]> {
     return this.applicationRepository.getAll();
   }
-  getById(ApplicationID: number): Promise<Application | null> {
-    return this.applicationRepository.getById(ApplicationID);
+  getById(applicationId: number): Promise<Application | null> {
+    return this.applicationRepository.getById(applicationId);
   }
   create(
-    Application: Omit<Application, 'ApplicationID'>,
+    Application: Omit<Application, 'applicationId'>,
   ): Promise<Application> {
     return this.applicationRepository.create(Application);
   }
   update(
-    ApplicationID: number,
+    applicationId: number,
     Application: Application,
   ): Promise<Application | null> {
-    return this.applicationRepository.update(ApplicationID, Application);
+    return this.applicationRepository.update(applicationId, Application);
   }
-  delete(ApplicationID: number): Promise<boolean> {
-    return this.applicationRepository.delete(ApplicationID);
+  delete(applicationId: number): Promise<boolean> {
+    return this.applicationRepository.delete(applicationId);
   }
 }

@@ -17,16 +17,17 @@ model User {
   id          Int           @id @default(autoincrement())
   username    String        @unique @db.VarChar(320)
   email       String        @unique @db.VarChar(320)
-  name        String?
-  UserType    UserType      @default(Developer)
-  UserStatus  UserStatus    @default(Active)
-  UserLevel   Int           @default(1)
-  CreatedAt   DateTime      @default(now())
-  Posts       Post[]
-  Connections Connections[]
+  name        String
+  photoUrl    String        @default("https://res.cloudinary.com/cloudimagestore-/image/upload/f_auto,q_auto/v1/Assets/icdn8f70m5fw7kyljdha")
+  userType    UserType      @default(Developer)
+  userStatus  UserStatus    @default(Active)
+  userLevel   Int           @default(1)
+  createdAt   DateTime      @default(now())
+  posts       Post[]
+  connections Connections[]
 
-  Jobs         Job[]
-  Applications Application[]
+  jobs         Job[]
+  applications Application[]
 
   requesterUser Connections[] @relation("RequesterToUsers")
   requesteeUser Connections[] @relation("RequesteeToUsers")
@@ -44,16 +45,16 @@ enum UserStatus {
 }
 
 model Post {
-  PostID      Int      @id @default(autoincrement())
-  PostTitle   String
+  postId      Int      @id @default(autoincrement())
+  postTitle   String
   isUpdated   Boolean  @default(false)
   updatedAt   DateTime @updatedAt
-  PostDate    DateTime @default(now())
-  PostContent String
-  PostType    PostType
-  PhotoURL    String?
+  postDate    DateTime @default(now())
+  postContent String
+  postType    PostType
+  photoURL    String?
 
-  User   User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId Int
 }
 
@@ -62,14 +63,14 @@ enum PostType {
 }
 
 model Connections {
-  ConnectionID     Int              @id
-  Requester        Int
-  Requestee        Int
-  ConnectionStatus ConnectionStatus
-  requesterUser    User             @relation("RequesterToUsers", fields: [Requester], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  requesteeUser    User             @relation("RequesteeToUsers", fields: [Requestee], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  Users            User?            @relation(fields: [usersUserID], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  usersUserID      Int?
+  connectionId     Int              @id
+  requester        Int
+  requestee        Int
+  connectionStatus ConnectionStatus
+  requesterUser    User             @relation("RequesterToUsers", fields: [requester], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  requesteeUser    User             @relation("RequesteeToUsers", fields: [requestee], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  users            User?            @relation(fields: [usersUserId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  usersUserId      Int?
   requestedTime    DateTime         @default(now())
 }
 
@@ -80,24 +81,24 @@ enum ConnectionStatus {
 }
 
 model Job {
-  JobID          Int           @id @default(autoincrement())
-  UserID         Int
-  JobTitle       String        @db.VarChar(100)
-  JobDescription String
-  JobDate        DateTime
-  user           User          @relation(fields: [UserID], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  jobId          Int           @id @default(autoincrement())
+  userId         Int
+  jobTitle       String        @db.VarChar(100)
+  jobDescription String
+  jobDate        DateTime
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   applications   Application[]
 }
 
 model Application {
-  ApplicationID     Int               @id @default(autoincrement())
-  JobID             Int
-  Applicant         Int
-  ApplicationStatus ApplicationStatus
-  ResumeUrl         String
+  applicationId     Int               @id @default(autoincrement())
+  jobId             Int
+  applicant         Int
+  applicationStatus ApplicationStatus
+  resumeUrl         String
   CvUrl             String
-  job               Job               @relation(fields: [JobID], references: [JobID], onDelete: Cascade, onUpdate: Cascade)
-  user              User              @relation(fields: [Applicant], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  job               Job               @relation(fields: [jobId], references: [jobId], onDelete: Cascade, onUpdate: Cascade)
+  user              User              @relation(fields: [applicant], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 enum ApplicationStatus {

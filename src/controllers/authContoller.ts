@@ -3,10 +3,10 @@ import jwt from 'jsonwebtoken';
 import { container } from 'tsyringe';
 import { OAuth2Client, TokenPayload } from 'google-auth-library';
 import handleAsync from '../utils/handleAsync';
-import { UserService } from '../services/UserService';
+import { UserService } from '../services/userService';
 import { AppError } from '../utils/error';
-import { UserRepositoryPrisma } from '../repositories/userRepositoryPrisma';
-import { PrismaClient } from '@prisma/client';
+
+const userService = container.resolve(UserService);
 
 const router = express.Router();
 const client = new OAuth2Client(
@@ -16,8 +16,6 @@ const client = new OAuth2Client(
     ? process.env.GOOGLE_CALLBACK_URL_DEV
     : process.env.GOOGLE_CALLBACK_URL_PROD,
 );
-
-console.log(process.env.GOOGLE_CALLBACK_URL);
 
 router.get(
   '/google/callback',
@@ -32,19 +30,13 @@ router.get(
       });
 
       const payload = ticket.getPayload();
-      const { email, name, sub: googleId } = payload as TokenPayload;
-      console.log(payload);
+      const { email, name, picture, sub: googleId } = payload as TokenPayload;
 
       // Check if user exists in database otherwise create user
       if (email) {
         const user = await userService.getByEmail(email);
-        console.log('user: ', user);
         if (!user) {
-          console.log('creating user');
-          const us = new UserService(
-            new UserRepositoryPrisma(new PrismaClient()),
-          );
-          await 
+          await userService.registerUser(email, name!, picture!);
         }
       } else {
         return next(new AppError(400, `Error signing with google`));

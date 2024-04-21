@@ -22,14 +22,10 @@ export class UserRepositoryPrisma implements UserRepository {
     return this.prisma.user.findUnique({
       where: { id },
       include: {
-        Posts: true,
+        posts: true,
       },
     });
   }
-
-  // async create(user: Omit<User, 'id'>): Promise<User> {
-  //   return this.prisma.user.create({ data: user });
-  // }
 
   async create(user: User): Promise<User> {
     return this.prisma.user.create({ data: user });

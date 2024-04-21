@@ -1,6 +1,6 @@
 import express, { Request, Response, NextFunction } from 'express';
 import { container } from 'tsyringe';
-import { UserService } from '../services/UserService';
+import { UserService } from '../services/userService';
 import handleAsync from '../utils/handleAsync';
 import { AppError } from '../utils/error';
 
@@ -10,6 +10,9 @@ const userService = container.resolve(UserService);
 router.get(
   '/',
   handleAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const queries = req.query;
+    console.log(queries);
+
     const users = await userService.getAll();
 
     if (!users.length) return next(new AppError(404, `No users found.`));
