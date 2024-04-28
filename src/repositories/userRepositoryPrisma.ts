@@ -1,42 +1,45 @@
-import { Prisma, PrismaClient, User } from '@prisma/client';
+import { PrismaClient, User } from '@prisma/client';
 import { injectable, inject } from 'tsyringe';
 import { UserRepository } from './userRepository.interface';
 
 // TODO: make name filter case insensitive
-function createPrismaFilter(queryObject: {
+interface PostFilters {
   name?: string;
   username?: string;
-  CreatedAt?: string; // ISO date string
-}): Prisma.UserWhereInput {
-  const filter: Prisma.UserWhereInput = {};
-
-  // Explicitly defining the keys we're interested in as a const array
-  const validKeys: Array<'name' | 'username'> = ['name', 'username'];
-
-  Object.keys(queryObject).forEach((key) => {
-    if (validKeys.includes(key as 'name' | 'username')) {
-      const validKey = key as 'name' | 'username';
-      const value = queryObject[validKey];
-      if (value) {
-        filter[validKey] = { contains: value };
-      }
-    } else if (key === 'CreatedAt' && queryObject.CreatedAt) {
-      const dateValue = queryObject.CreatedAt;
-      filter['createdAt'] = {
-        gte: new Date(dateValue),
-      };
-    }
-  });
-  console.log('filter', filter);
-  return filter;
+  createdAt_gt?: string;
 }
+
+const createPrismaFilter = (filters: PostFilters) => {
+  const whereClause: { [key: string]: unknown } = {};
+
+  if (filters.name) {
+    whereClause.name = {
+      contains: filters.name,
+    };
+  }
+
+  if (filters.username) {
+    whereClause.username = {
+      contains: filters.username,
+    };
+  }
+
+  if (filters.createdAt_gt) {
+    whereClause.createdAt = {
+      gt: filters.createdAt_gt,
+    };
+  }
+  return whereClause;
+};
 
 @injectable()
 export class UserRepositoryPrisma implements UserRepository {
   constructor(@inject('PrismaClient') private prisma: PrismaClient) {}
 
-  async getAll(filter?: object): Promise<User[]> {
-    const whereClause = createPrismaFilter(filter!) ?? {};
+  async getAll(queryObject?: Record<string, unknown>): Promise<User[]> {
+    // const validKeys = ['name', 'username', 'createdAt_gt'];
+    const whereClause = createPrismaFilter(queryObject!) ?? {};
+    console.log('created filter', whereClause);
 
     return this.prisma.user.findMany({
       where: whereClause,

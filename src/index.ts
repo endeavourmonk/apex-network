@@ -16,8 +16,6 @@ const PORT = process.env.PORT ?? 3000;
 
 app.use(express.json({ limit: '10kb' }));
 
-console.log(process.env.PORT);
-
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/posts', postRouter);
 app.use('/api/v1/jobs', jobRouter);
