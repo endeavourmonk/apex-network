@@ -11,7 +11,7 @@ router.get(
   '/',
   handleAsync(async (req: Request, res: Response, next: NextFunction) => {
     const queries = req.query;
-    // console.log(queries);
+    console.log(queries);
 
     const users = await userService.getAll(queries);
 

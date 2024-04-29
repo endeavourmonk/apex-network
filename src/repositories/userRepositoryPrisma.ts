@@ -3,13 +3,15 @@ import { injectable, inject } from 'tsyringe';
 import { UserRepository } from './userRepository.interface';
 
 // TODO: make name filter case insensitive
-interface PostFilters {
+interface UserFilters {
   name?: string;
   username?: string;
-  createdAt_gt?: string;
+  createdAt?: string;
+  userLevel?: number;
+  userType?: string;
 }
 
-const createPrismaFilter = (filters: PostFilters) => {
+const createPrismaFilter = (filters: UserFilters) => {
   const whereClause: { [key: string]: unknown } = {};
 
   if (filters.name) {
@@ -24,11 +26,18 @@ const createPrismaFilter = (filters: PostFilters) => {
     };
   }
 
-  if (filters.createdAt_gt) {
-    whereClause.createdAt = {
-      gt: filters.createdAt_gt,
+  if (filters.createdAt) {
+    whereClause.createdAt = filters.createdAt;
+  }
+  if (filters.userLevel) {
+    whereClause.userLevel = Number(filters.userLevel);
+  }
+  if (filters.userType) {
+    whereClause.userType = {
+      equals: filters.userType,
     };
   }
+
   return whereClause;
 };
 
@@ -37,7 +46,6 @@ export class UserRepositoryPrisma implements UserRepository {
   constructor(@inject('PrismaClient') private prisma: PrismaClient) {}
 
   async getAll(queryObject?: Record<string, unknown>): Promise<User[]> {
-    // const validKeys = ['name', 'username', 'createdAt_gt'];
     const whereClause = createPrismaFilter(queryObject!) ?? {};
     console.log('created filter', whereClause);
 
