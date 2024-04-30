@@ -10,13 +10,10 @@ const postService = container.resolve(PostService);
 router.get(
   '/',
   handleAsync(async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const posts = await postService.getAll();
-      if (!posts) return new AppError(404, `Posts not found`);
-      res.json(posts);
-    } catch (err) {
-      next(err);
-    }
+    const queries = req.query;
+    const posts = await postService.getAll(queries);
+    if (!posts) return next(new AppError(404, `Posts not found`));
+    res.json(posts);
   }),
 );
 

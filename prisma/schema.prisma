@@ -23,6 +23,7 @@ model User {
   userStatus  UserStatus    @default(Active)
   userLevel   Int           @default(1)
   createdAt   DateTime      @default(now())
+  openToWork  Boolean       @default(false)
   posts       Post[]
   connections Connections[]
 

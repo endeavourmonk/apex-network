@@ -9,8 +9,9 @@ export class PostService implements IPostService {
     @inject('PostRepository') private postRepository: PostRepository,
   ) {}
 
-  getAll(): Promise<Post[]> {
-    return this.postRepository.getAll();
+  getAll(filter?: object): Promise<Post[]> {
+    const whereClause = filter ?? {};
+    return this.postRepository.getAll(whereClause);
   }
   getById(postId: number): Promise<Post | null> {
     return this.postRepository.getById(postId);

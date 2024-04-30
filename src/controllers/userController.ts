@@ -11,8 +11,6 @@ router.get(
   '/',
   handleAsync(async (req: Request, res: Response, next: NextFunction) => {
     const queries = req.query;
-    console.log(queries);
-
     const users = await userService.getAll(queries);
 
     if (!users.length) return next(new AppError(404, `No users found.`));

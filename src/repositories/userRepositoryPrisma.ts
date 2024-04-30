@@ -11,32 +11,25 @@ interface UserFilters {
   userType?: string;
 }
 
-const createPrismaFilter = (filters: UserFilters) => {
+const createUserPrismaFilter = (filters: UserFilters) => {
   const whereClause: { [key: string]: unknown } = {};
 
-  if (filters.name) {
+  if (filters.name)
     whereClause.name = {
-      contains: filters.name,
+      startsWith: filters.name,
+      mode: 'insensitive',
     };
-  }
-
-  if (filters.username) {
+  if (filters.username)
     whereClause.username = {
-      contains: filters.username,
+      startsWith: filters.username,
+      mode: 'insensitive',
     };
-  }
-
-  if (filters.createdAt) {
-    whereClause.createdAt = filters.createdAt;
-  }
-  if (filters.userLevel) {
-    whereClause.userLevel = Number(filters.userLevel);
-  }
-  if (filters.userType) {
+  if (filters.createdAt) whereClause.createdAt = filters.createdAt;
+  if (filters.userLevel) whereClause.userLevel = Number(filters.userLevel);
+  if (filters.userType)
     whereClause.userType = {
       equals: filters.userType,
     };
-  }
 
   return whereClause;
 };
@@ -45,8 +38,8 @@ const createPrismaFilter = (filters: UserFilters) => {
 export class UserRepositoryPrisma implements UserRepository {
   constructor(@inject('PrismaClient') private prisma: PrismaClient) {}
 
-  async getAll(queryObject?: Record<string, unknown>): Promise<User[]> {
-    const whereClause = createPrismaFilter(queryObject!) ?? {};
+  async getAll(queryObject?: object): Promise<User[]> {
+    const whereClause = createUserPrismaFilter(queryObject!);
     console.log('created filter', whereClause);
 
     return this.prisma.user.findMany({
