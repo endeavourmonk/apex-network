@@ -36,20 +36,20 @@ export class PostRepositoryPrisma implements PostRepository {
     });
   }
 
-  async getById(postId: number): Promise<Post | null> {
-    return this.prisma.post.findUnique({ where: { postId } });
+  async getById(id: number): Promise<Post | null> {
+    return this.prisma.post.findUnique({ where: { id } });
   }
 
   async create(Post: Omit<Post, 'postId'>): Promise<Post> {
     return this.prisma.post.create({ data: Post });
   }
 
-  async update(postId: number, Posts: Post): Promise<Post | null> {
-    return this.prisma.post.update({ where: { postId }, data: Posts });
+  async update(id: number, Post: Post): Promise<Post | null> {
+    return this.prisma.post.update({ where: { id }, data: Post });
   }
 
-  async delete(postId: number): Promise<boolean> {
-    const deletedPosts = await this.prisma.post.delete({ where: { postId } });
+  async delete(id: number): Promise<boolean> {
+    const deletedPosts = await this.prisma.post.delete({ where: { id } });
     return !!deletedPosts;
   }
 }

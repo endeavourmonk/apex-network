@@ -2,7 +2,6 @@ import { PrismaClient, User } from '@prisma/client';
 import { injectable, inject } from 'tsyringe';
 import { UserRepository } from './userRepository.interface';
 
-// TODO: make name filter case insensitive
 interface UserFilters {
   name?: string;
   username?: string;

@@ -14,20 +14,19 @@ datasource db {
 }
 
 model User {
-  id             Int        @id @default(autoincrement())
-  username       String     @unique @db.VarChar(320)
-  email          String     @unique @db.VarChar(320)
-  name           String
-  gender         Gender
-  about          String     @db.VarChar(500)
-  skills         String
-  photoUrl       String     @default("https://res.cloudinary.com/cloudimagestore-/image/upload/f_auto,q_auto/v1/Assets/icdn8f70m5fw7kyljdha")
-  userType       UserType   @default(Developer)
-  userStatus     UserStatus @default(Active)
-  userLevel      Int        @default(1)
-  createdAt      DateTime   @default(now())
-  openToWork     Boolean    @default(false)
-  profileUpdated DateTime   @updatedAt
+  id         Int        @id @default(autoincrement())
+  username   String     @unique @db.VarChar(320)
+  email      String     @unique @db.VarChar(320)
+  name       String
+  gender     Gender     @default(Male)
+  about      String     @default("N/A") @db.VarChar(500)
+  skills     String     @default("None")
+  photoUrl   String     @default("https://res.cloudinary.com/cloudimagestore-/image/upload/f_auto,q_auto/v1/Assets/icdn8f70m5fw7kyljdha")
+  userType   UserType   @default(Developer)
+  userStatus UserStatus @default(Active)
+  userLevel  Int        @default(1)
+  createdAt  DateTime   @default(now())
+  openToWork Boolean    @default(false)
 
   posts       Post[]
   connections Connections[]
@@ -38,8 +37,8 @@ model User {
   requesterUser Connections[] @relation("RequesterToUsers")
   requesteeUser Connections[] @relation("RequesteeToUsers")
 
-  Likes    Like[]
-  Comments Comment[]
+  Reactions Reaction[]
+  Comments  Comment[]
 }
 
 enum Gender {
@@ -60,20 +59,21 @@ enum UserStatus {
 }
 
 model Post {
-  id          Int      @id @default(autoincrement())
-  postTitle   String
-  isUpdated   Boolean  @default(false)
-  updatedAt   DateTime @updatedAt
-  postDate    DateTime @default(now())
-  postContent String
-  postType    PostType @default(Post)
-  photoURL    String?
+  id            Int      @id @default(autoincrement())
+  postTitle     String
+  isUpdated     Boolean  @default(false)
+  updatedAt     DateTime @updatedAt
+  postDate      DateTime @default(now())
+  postContent   String
+  postType      PostType @default(Post)
+  photoURL      String?
+  reactionCount Int      @default(0)
 
   user   User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId Int
 
-  Likes    Like[]
-  Comments Comment[]
+  Reactions Reaction[]
+  Comments  Comment[]
 }
 
 enum PostType {
@@ -81,17 +81,17 @@ enum PostType {
   Article
 }
 
-model Like {
-  id        Int      @id @default(autoincrement())
-  post      Post     @relation(fields: [postId], references: [id])
+model Reaction {
+  id        Int          @id @default(autoincrement())
+  post      Post         @relation(fields: [postId], references: [id])
   postId    Int
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId    Int
-  reaction  Reaction @default(Like)
-  reactedAt DateTime @default(now())
+  reaction  ReactionType @default(Like)
+  reactedAt DateTime     @default(now())
 }
 
-enum Reaction {
+enum ReactionType {
   Like
   Dislike
   Insightful

@@ -16,11 +16,15 @@ import { ApplicationRepository } from '../repositories/applicationRepository.int
 import { ApplicationRepositoryPrisma } from '../repositories/applicationRepositoryPrisma';
 import { IApplicationService } from '../services/applicationService.interface';
 import { ApplicationService } from '../services/applicationService';
+import { ReactionRepository } from '../repositories/reactionRepository.interface';
+import { ReactionRepositoryPrisma } from '../repositories/reactionRepositoryPrisma';
+import { IReactionService } from '../services/reactionService.interface';
+import { ReactionService } from '../services/reactionService';
 
-// prisma client setup
+// Prisma Client Setup
 container.register('PrismaClient', { useValue: new PrismaClient() });
 
-// user setup
+// User Setup
 container.register<UserRepository>('UserRepository', {
   useClass: UserRepositoryPrisma,
 });
@@ -29,7 +33,7 @@ container.register<IUserService>('IUserService', {
   useClass: UserService,
 });
 
-// post setup
+// Post Setup
 container.register<PostRepository>('PostRepository', {
   useClass: PostRepositoryPrisma,
 });
@@ -38,7 +42,7 @@ container.register<IPostService>('IPostService', {
   useClass: PostService,
 });
 
-// jobs setup
+// Job Setup
 container.register<JobRepository>('JobRepository', {
   useClass: JobRepositoryPrisma,
 });
@@ -47,7 +51,7 @@ container.register<IJobService>('IJobService', {
   useClass: JobService,
 });
 
-// application setup
+// Application Setup
 container.register<ApplicationRepository>('ApplicationRepository', {
   useClass: ApplicationRepositoryPrisma,
 });
@@ -56,4 +60,13 @@ container.register<IApplicationService>('IApplicationService', {
   useClass: ApplicationService,
 });
 
-// connectoin setup
+// Connectoin Setup
+
+// Reaction Setup
+container.register<ReactionRepository>('ReactionRepository', {
+  useClass: ReactionRepositoryPrisma,
+});
+
+container.register<IReactionService>('IReactionService', {
+  useClass: ReactionService,
+});
