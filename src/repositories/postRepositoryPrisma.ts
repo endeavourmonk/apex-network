@@ -40,7 +40,7 @@ export class PostRepositoryPrisma implements PostRepository {
     return this.prisma.post.findUnique({ where: { id } });
   }
 
-  async create(Post: Omit<Post, 'postId'>): Promise<Post> {
+  async create(Post: Post): Promise<Post> {
     return this.prisma.post.create({ data: Post });
   }
 

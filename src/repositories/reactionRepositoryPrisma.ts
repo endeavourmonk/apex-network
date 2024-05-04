@@ -7,10 +7,10 @@ export class ReactionRepositoryPrisma implements ReactionRepository {
   constructor(@inject('PrismaClient') private prisma: PrismaClient) {}
 
   getAll(postId?: number, userId?: number): Promise<Reaction[]> {
-    const whereClause = {
-      postId,
-      userId,
-    };
+    const whereClause: { [key: string]: unknown } = {};
+
+    if (postId !== undefined) whereClause.postId = postId;
+    if (userId !== undefined) whereClause.userId = userId;
 
     return this.prisma.reaction.findMany({
       where: whereClause,

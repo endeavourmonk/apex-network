@@ -13,7 +13,7 @@ export class JobService implements IJobService {
   getById(jobId: number): Promise<Job | null> {
     return this.JobRepository.getById(jobId);
   }
-  create(Job: Omit<Job, 'jobId'>): Promise<Job> {
+  create(Job: Job): Promise<Job> {
     return this.JobRepository.create(Job);
   }
   update(jobId: number, Job: Job): Promise<Job | null> {

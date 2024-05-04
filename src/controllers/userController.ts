@@ -41,7 +41,11 @@ router.post(
   '/',
   handleAsync(async (req: Request, res: Response) => {
     const newUser = await userService.create(req.body);
-    res.json(newUser);
+    res.status(201).json({
+      data: {
+        newUser,
+      },
+    });
   }),
 );
 
@@ -52,7 +56,11 @@ router.put(
       Number(req.params.id),
       req.body,
     );
-    res.json(updatedUser);
+    res.status(200).json({
+      data: {
+        updatedUser,
+      },
+    });
   }),
 );
 
@@ -60,7 +68,11 @@ router.delete(
   '/:id',
   handleAsync(async (req: Request, res: Response) => {
     const deleted = await userService.delete(Number(req.params.id));
-    res.json({ deleted });
+    res.status(204).json({
+      data: {
+        deleted,
+      },
+    });
   }),
 );
 

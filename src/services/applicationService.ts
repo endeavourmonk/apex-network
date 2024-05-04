@@ -16,9 +16,7 @@ export class ApplicationService implements IApplicationService {
   getById(applicationId: number): Promise<Application | null> {
     return this.applicationRepository.getById(applicationId);
   }
-  create(
-    Application: Omit<Application, 'applicationId'>,
-  ): Promise<Application> {
+  create(Application: Application): Promise<Application> {
     return this.applicationRepository.create(Application);
   }
   update(

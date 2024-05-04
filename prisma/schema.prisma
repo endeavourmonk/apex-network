@@ -37,8 +37,8 @@ model User {
   requesterUser Connections[] @relation("RequesterToUsers")
   requesteeUser Connections[] @relation("RequesteeToUsers")
 
-  Reactions Reaction[]
-  Comments  Comment[]
+  reactions Reaction[]
+  comments  Comment[]
 }
 
 enum Gender {
@@ -60,11 +60,11 @@ enum UserStatus {
 
 model Post {
   id            Int      @id @default(autoincrement())
-  postTitle     String
+  postTitle     String?
   isUpdated     Boolean  @default(false)
   updatedAt     DateTime @updatedAt
   postDate      DateTime @default(now())
-  postContent   String
+  postContent   String?
   postType      PostType @default(Post)
   photoURL      String?
   reactionCount Int      @default(0)
@@ -72,8 +72,8 @@ model Post {
   user   User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId Int
 
-  Reactions Reaction[]
-  Comments  Comment[]
+  reactions Reaction[]
+  comments  Comment[]
 }
 
 enum PostType {

@@ -16,12 +16,13 @@ export class PostService implements IPostService {
   getById(postId: number): Promise<Post | null> {
     return this.postRepository.getById(postId);
   }
-  create(Post: Omit<Post, 'postId'>): Promise<Post> {
+  create(Post: Post): Promise<Post> {
     return this.postRepository.create(Post);
   }
-  update(postId: number, Post: Post): Promise<Post | null> {
-    return this.postRepository.update(postId, Post);
+  update(postId: number, updateData: Post): Promise<Post | null> {
+    return this.postRepository.update(postId, updateData);
   }
+
   delete(postId: number): Promise<boolean> {
     return this.postRepository.delete(postId);
   }
