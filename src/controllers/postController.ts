@@ -6,26 +6,34 @@ import { AppError } from '../utils/error';
 
 import { ReactionService } from '../services/reactionService';
 import { validateLogin } from '../middlewares/validateLogin';
+import { User } from '@prisma/client';
 
 const router = express.Router();
 const postService = container.resolve(PostService);
 const reactionService = container.resolve(ReactionService);
 
+interface RequestWithUser extends Request {
+  user?: User;
+}
+
 router.get(
   '/',
   validateLogin,
-  handleAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const queries = req.query;
-    const posts = await postService.getAll(queries);
-    if (!posts) return next(new AppError(404, `Posts not found`));
+  handleAsync(
+    async (req: RequestWithUser, res: Response, next: NextFunction) => {
+      const queries = req.query;
+      const posts = await postService.getAll(queries);
+      if (!posts) return next(new AppError(404, `Posts not found`));
+      console.log(req.user);
 
-    res.status(200).json({
-      results: posts.length,
-      data: {
-        posts,
-      },
-    });
-  }),
+      res.status(200).json({
+        results: posts.length,
+        data: {
+          posts,
+        },
+      });
+    },
+  ),
 );
 
 router.get(
