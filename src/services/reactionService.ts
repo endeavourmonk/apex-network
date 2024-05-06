@@ -19,7 +19,27 @@ export class ReactionService implements IReactionService {
   update(id: number, data: Reaction): Promise<Reaction | null> {
     return this.reactionRepository.update(id, data);
   }
-  async delete(id: number): Promise<boolean> {
+  async delete(id: number): Promise<Reaction> {
     return this.reactionRepository.delete(id);
+  }
+
+  async createAndIncrementPostReactionCount(
+    postId: number,
+    data: Reaction,
+  ): Promise<boolean> {
+    return this.reactionRepository.createAndIncrementPostReactionCount(
+      postId,
+      data,
+    );
+  }
+
+  async deleteAndDecrementPostReactionCount(
+    reactionId: number,
+    postId: number,
+  ): Promise<boolean> {
+    return this.reactionRepository.deleteAndDecrementPostReactionCount(
+      reactionId,
+      postId,
+    );
   }
 }

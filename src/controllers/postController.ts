@@ -5,6 +5,7 @@ import handleAsync from '../utils/handleAsync';
 import { AppError } from '../utils/error';
 
 import { ReactionService } from '../services/reactionService';
+import { validateLogin } from '../middlewares/validateLogin';
 
 const router = express.Router();
 const postService = container.resolve(PostService);
@@ -12,6 +13,7 @@ const reactionService = container.resolve(ReactionService);
 
 router.get(
   '/',
+  validateLogin,
   handleAsync(async (req: Request, res: Response, next: NextFunction) => {
     const queries = req.query;
     const posts = await postService.getAll(queries);
@@ -28,9 +30,9 @@ router.get(
 
 router.get(
   '/:id',
-  handleAsync(async (req: Request, res: Response) => {
+  handleAsync(async (req: Request, res: Response, next: NextFunction) => {
     const post = await postService.getById(Number(req.params.id));
-    if (!post) return new AppError(404, `Post not found`);
+    if (!post) return next(new AppError(404, `Post not found`));
     res.status(200).json({
       data: {
         post,
@@ -43,7 +45,7 @@ router.post(
   '/',
   handleAsync(async (req: Request, res: Response) => {
     const newPost = await postService.create(req.body);
-    res.status(200).json({
+    res.status(201).json({
       data: {
         newPost,
       },
@@ -70,12 +72,8 @@ router.put(
 router.delete(
   '/:id',
   handleAsync(async (req: Request, res: Response) => {
-    const deleted = await postService.delete(Number(req.params.id));
-    res.status(204).json({
-      data: {
-        deleted,
-      },
-    });
+    await postService.delete(Number(req.params.id));
+    res.status(204).end();
   }),
 );
 
@@ -84,7 +82,7 @@ router.get(
   '/:postId/reactions',
   handleAsync(async (req: Request, res: Response, next: NextFunction) => {
     const reactions = await reactionService.getAll(Number(req.params.postId));
-    if (!reactions) return next(new AppError(404, `Posts not found`));
+    if (!reactions) return next(new AppError(404, `Post not found`));
     res.status(200).json({
       results: reactions.length,
       data: {
@@ -94,23 +92,46 @@ router.get(
   }),
 );
 
-// Updating the reactionsCount in the Post table on creating and deletion of a reaction.
+// Updating the reactionsCount in the Post table on creating of a reaction.
+// router.post(
+//   '/:postId/reactions',
+//   handleAsync(async (req: Request, res: Response, next: NextFunction) => {
+//     // const postId = req.params.postId;
+//     // const userId = req.user.id;
+//     const { postId, userId } = req.body;
+//     if (!postId || !userId)
+//       return next(new AppError(400, `Missing postId or userId`));
+
+//     const newReaction = await reactionService.create(req.body);
+//     req.body = { reactionCount: { increment: 1 } };
+//     await postService.update(Number(postId), req.body);
+
+//     res.status(201).json({
+//       data: {
+//         newReaction,
+//       },
+//     });
+//   }),
+// );
+
 router.post(
-  '/reactions',
+  '/:postId/reactions',
   handleAsync(async (req: Request, res: Response, next: NextFunction) => {
+    // const postId = req.params.postId;
+    // const userId = req.user.id;
     const { postId, userId } = req.body;
     if (!postId || !userId)
       return next(new AppError(400, `Missing postId or userId`));
-
-    const newReaction = await reactionService.create(req.body);
-    const reactionCount = (await reactionService.getAll(postId)).length;
-    req.body = { reactionCount: reactionCount };
-    await postService.update(Number(postId), req.body);
+    const isReactionCreated =
+      await reactionService.createAndIncrementPostReactionCount(
+        postId,
+        req.body,
+      );
+    if (!isReactionCreated)
+      return next(new AppError(500, `Reaction not created`));
 
     res.status(201).json({
-      data: {
-        newReaction,
-      },
+      message: `success`,
     });
   }),
 );
@@ -119,7 +140,7 @@ router.put(
   '/:postId/reactions/:reactionId',
   handleAsync(async (req: Request, res: Response) => {
     const updatedReaction = await reactionService.update(
-      Number(req.params.id),
+      Number(req.params.reactionId),
       req.body,
     );
 
@@ -131,19 +152,20 @@ router.put(
   }),
 );
 
+// Updating the reactionsCount in the Post table on deletion of a reaction.
 router.delete(
   '/:postId/reactions/:reactionId',
-  handleAsync(async (req: Request, res: Response) => {
+  handleAsync(async (req: Request, res: Response, next: NextFunction) => {
     const { postId, reactionId } = req.params;
-    const deleted = await reactionService.delete(Number(reactionId));
-    const reactionCount = (await reactionService.getAll(Number(postId))).length;
-    req.body = { reactionCount: reactionCount };
-    await postService.update(Number(postId), req.body);
-    res.status(204).json({
-      data: {
-        deleted,
-      },
-    });
+    const isReactionDeleted =
+      await reactionService.deleteAndDecrementPostReactionCount(
+        Number(reactionId),
+        Number(postId),
+      );
+
+    if (!isReactionDeleted)
+      return next(new AppError(500, `Reaction not deleted`));
+    res.status(204).end();
   }),
 );
 
