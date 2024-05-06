@@ -55,6 +55,17 @@ export class ReactionRepositoryPrisma implements ReactionRepository {
     data: Reaction,
   ): Promise<boolean> {
     try {
+      // Check if a reaction from this user to this post already exists
+      const existingReaction = await this.prisma.reaction.findFirst({
+        where: {
+          postId: postId,
+          authorId: data.authorId,
+        },
+      });
+
+      if (existingReaction)
+        throw new Error(`User has already reacted to this post`);
+
       await this.prisma.$transaction([
         this.prisma.reaction.create({ data: data }),
         this.prisma.post.update({
@@ -65,7 +76,7 @@ export class ReactionRepositoryPrisma implements ReactionRepository {
       return true;
     } catch (error) {
       console.error(error);
-      return false;
+      throw error;
     }
   }
 
@@ -84,7 +95,7 @@ export class ReactionRepositoryPrisma implements ReactionRepository {
       return true;
     } catch (error) {
       console.error(`Transaction failed: ${error}`);
-      return false;
+      throw error;
     }
   }
 }

@@ -7,5 +7,5 @@ export interface IUserService {
   create(user: User): Promise<User>;
   registerUser(email: string, name: string, picture: string): Promise<User>;
   update(id: number, user: User): Promise<User | null>;
-  delete(id: number): Promise<boolean>;
+  delete(id: number): Promise<User>;
 }

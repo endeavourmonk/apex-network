@@ -69,8 +69,8 @@ model Post {
   photoURL      String?
   reactionCount Int      @default(0)
 
-  user   User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId Int
+  author   User @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  authorId Int
 
   reactions Reaction[]
   comments  Comment[]
@@ -83,10 +83,10 @@ enum PostType {
 
 model Reaction {
   id        Int          @id @default(autoincrement())
-  post      Post         @relation(fields: [postId], references: [id])
+  post      Post         @relation(fields: [postId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   postId    Int
-  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId    Int
+  author    User         @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  authorId  Int
   reaction  ReactionType @default(Like)
   reactedAt DateTime     @default(now())
 }
@@ -104,10 +104,10 @@ enum ReactionType {
 
 model Comment {
   id          Int      @id @default(autoincrement())
-  post        Post     @relation(fields: [postId], references: [id])
+  post        Post     @relation(fields: [postId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   postId      Int
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId      Int
+  author      User     @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  authorId    Int
   commentText String   @db.VarChar(5000)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -133,11 +133,11 @@ enum ConnectionStatus {
 
 model Job {
   id             Int           @id @default(autoincrement())
-  userId         Int
   jobTitle       String        @db.VarChar(100)
   jobDescription String
   jobDate        DateTime
-  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  author         User          @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  authorId       Int
   applications   Application[]
 }
 

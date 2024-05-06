@@ -41,7 +41,7 @@ export class UserService implements IUserService {
     return this.userRepository.update(id, user);
   }
 
-  delete(id: number): Promise<boolean> {
+  delete(id: number): Promise<User> {
     return this.userRepository.delete(id);
   }
 }

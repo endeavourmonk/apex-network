@@ -68,6 +68,7 @@ router.delete(
   '/:id',
   handleAsync(async (req: Request, res: Response) => {
     const deleted = await userService.delete(Number(req.params.id));
+    console.log('deleted: ', deleted);
     res.status(204).json({
       data: {
         deleted,
