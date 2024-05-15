@@ -34,38 +34,12 @@ export class ReactionRepositoryPrisma implements ReactionRepository {
     });
   }
 
-  // async createAndIncrementPostReactionCount(
-  //   postId: number,
-  //   data: Reaction,
-  // ): Promise<boolean> {
-  //   try {
-  //     await this.prisma.$transaction([
-  //       this.prisma.reaction.create({ data: data }),
-  //       postService.update(postId, { reactionCount: { decrement: 1 } }),
-  //     ]);
-  //     return true;
-  //   } catch (error) {
-  //     console.error(error);
-  //     return false;
-  //   }
-  // }
-
   async createAndIncrementPostReactionCount(
     postId: number,
     data: Reaction,
   ): Promise<boolean> {
     try {
-      // Check if a reaction from this user to this post already exists
-      const existingReaction = await this.prisma.reaction.findFirst({
-        where: {
-          postId: postId,
-          authorId: data.authorId,
-        },
-      });
-
-      if (existingReaction)
-        throw new Error(`User has already reacted to this post`);
-
+      // unique author for every post is handled at schema layer
       await this.prisma.$transaction([
         this.prisma.reaction.create({ data: data }),
         this.prisma.post.update({

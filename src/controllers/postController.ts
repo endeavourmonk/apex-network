@@ -91,7 +91,7 @@ router.get(
   '/:postId/reactions',
   handleAsync(async (req: Request, res: Response, next: NextFunction) => {
     const reactions = await reactionService.getAll(Number(req.params.postId));
-    if (!reactions) return next(new AppError(404, `Post not found`));
+    if (!reactions) return next(new AppError(404, `Reactions not found`));
     res.status(200).json({
       results: reactions.length,
       data: {
@@ -100,28 +100,6 @@ router.get(
     });
   }),
 );
-
-// Updating the reactionsCount in the Post table on creating of a reaction.
-// router.post(
-//   '/:postId/reactions',
-//   handleAsync(async (req: Request, res: Response, next: NextFunction) => {
-//     // const postId = req.params.postId;
-//     // const userId = req.user.id;
-//     const { postId, userId } = req.body;
-//     if (!postId || !userId)
-//       return next(new AppError(400, `Missing postId or userId`));
-
-//     const newReaction = await reactionService.create(req.body);
-//     req.body = { reactionCount: { increment: 1 } };
-//     await postService.update(Number(postId), req.body);
-
-//     res.status(201).json({
-//       data: {
-//         newReaction,
-//       },
-//     });
-//   }),
-// );
 
 router.post(
   '/:postId/reactions',
