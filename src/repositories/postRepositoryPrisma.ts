@@ -44,12 +44,14 @@ export class PostRepositoryPrisma implements PostRepository {
     return this.prisma.post.create({ data: Post });
   }
 
-  async update(id: number, Post: Post): Promise<Post | null> {
-    return this.prisma.post.update({ where: { id }, data: Post });
+  async update(id: number, authorId: number, Post: Post): Promise<Post | null> {
+    return this.prisma.post.update({ where: { id, authorId }, data: Post });
   }
 
-  async delete(id: number): Promise<boolean> {
-    const deletedPosts = await this.prisma.post.delete({ where: { id } });
+  async delete(id: number, authorId: number): Promise<boolean> {
+    const deletedPosts = await this.prisma.post.delete({
+      where: { id, authorId },
+    });
     return !!deletedPosts;
   }
 }

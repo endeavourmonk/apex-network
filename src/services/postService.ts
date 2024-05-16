@@ -19,11 +19,15 @@ export class PostService implements IPostService {
   create(Post: Post): Promise<Post> {
     return this.postRepository.create(Post);
   }
-  update(postId: number, updateData: Post): Promise<Post | null> {
-    return this.postRepository.update(postId, updateData);
+  update(
+    postId: number,
+    authorId: number,
+    updateData: Post,
+  ): Promise<Post | null> {
+    return this.postRepository.update(postId, authorId, updateData);
   }
 
-  delete(postId: number): Promise<boolean> {
-    return this.postRepository.delete(postId);
+  delete(postId: number, authorId: number): Promise<boolean> {
+    return this.postRepository.delete(postId, authorId);
   }
 }
