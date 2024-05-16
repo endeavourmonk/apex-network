@@ -82,13 +82,22 @@ enum PostType {
 }
 
 model Reaction {
-  id        Int          @id @default(autoincrement())
-  post      Post         @relation(fields: [postId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  postId    Int
-  author    User         @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  authorId  Int
+  id Int @id @default(autoincrement())
+
+  postId Int?
+  post   Post? @relation(fields: [postId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  commentId Int?
+  comment   Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  authorId Int
+  author   User @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
   reaction  ReactionType @default(Like)
   reactedAt DateTime     @default(now())
+
+  @@unique([postId, authorId])
+  @@unique([commentId, authorId])
 }
 
 enum ReactionType {
@@ -103,14 +112,20 @@ enum ReactionType {
 }
 
 model Comment {
-  id          Int      @id @default(autoincrement())
-  post        Post     @relation(fields: [postId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  postId      Int
-  author      User     @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  authorId    Int
-  commentText String   @db.VarChar(5000)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id       Int  @id @default(autoincrement())
+  post     Post @relation(fields: [postId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  postId   Int
+  author   User @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  authorId Int
+
+  parentId      Int?
+  parentComment Comment?  @relation("subComment", fields: [parentId], references: [id])
+  children      Comment[] @relation("subComment")
+
+  commentText String     @db.VarChar(5000)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  Reaction    Reaction[]
 }
 
 model Connections {
