@@ -122,10 +122,11 @@ model Comment {
   parentComment Comment?  @relation("subComment", fields: [parentId], references: [id])
   children      Comment[] @relation("subComment")
 
-  commentText String     @db.VarChar(5000)
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  Reaction    Reaction[]
+  commentText   String     @db.VarChar(5000)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  reactionCount Int        @default(0)
+  Reaction      Reaction[]
 }
 
 model Connections {

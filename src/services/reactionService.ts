@@ -10,36 +10,51 @@ export class ReactionService implements IReactionService {
     private reactionRepository: ReactionRepository,
   ) {}
 
-  getAll(postId?: number, userId?: number): Promise<Reaction[]> {
-    return this.reactionRepository.getAll(postId, userId);
-  }
-  create(data: Reaction): Promise<Reaction> {
-    return this.reactionRepository.create(data);
-  }
-  update(id: number, data: Reaction): Promise<Reaction | null> {
-    return this.reactionRepository.update(id, data);
-  }
-  async delete(id: number): Promise<Reaction> {
-    return this.reactionRepository.delete(id);
+  getAll(filters?: { [key: string]: unknown }): Promise<Reaction[]> {
+    const whereClause: { [key: string]: unknown } = {};
+    if (filters?.postId) whereClause.postId = filters.postId;
+    if (filters?.authorId) whereClause.authorId = filters.authorId;
+
+    return this.reactionRepository.getAll();
   }
 
-  async createAndIncrementPostReactionCount(
-    postId: number,
+  update(
+    id: number,
+    authorId: number,
     data: Reaction,
+  ): Promise<Reaction | null> {
+    return this.reactionRepository.update(id, authorId, data);
+  }
+
+  addPostReaction(data: Reaction): Promise<boolean> {
+    return this.reactionRepository.addPostReaction(data);
+  }
+
+  removePostReaction(
+    reactionId: number,
+    postId: number,
+    authorId: number,
   ): Promise<boolean> {
-    return this.reactionRepository.createAndIncrementPostReactionCount(
+    return this.reactionRepository.removePostReaction(
+      reactionId,
       postId,
-      data,
+      authorId,
     );
   }
 
-  async deleteAndDecrementPostReactionCount(
+  addCommentReaction(data: Reaction): Promise<boolean> {
+    return this.reactionRepository.addCommentReaction(data);
+  }
+
+  removeCommentReaction(
     reactionId: number,
-    postId: number,
+    commentId: number,
+    authorId: number,
   ): Promise<boolean> {
-    return this.reactionRepository.deleteAndDecrementPostReactionCount(
+    return this.reactionRepository.removeCommentReaction(
       reactionId,
-      postId,
+      commentId,
+      authorId,
     );
   }
 }

@@ -1,11 +1,24 @@
 import express, { Request, Response, NextFunction } from 'express';
 import { container } from 'tsyringe';
+
+import { User } from '@prisma/client';
 import { UserService } from '../services/userService';
-import handleAsync from '../utils/handleAsync';
 import { AppError } from '../utils/error';
+import handleAsync from '../utils/handleAsync';
+import reactionRouter from './reactionController';
+import commentRouter from './commentController';
+import { validateLogin } from '../middlewares/validateLogin';
 
 const router = express.Router();
 const userService = container.resolve(UserService);
+
+interface RequestWithUser extends Request {
+  user?: User;
+}
+
+// route middleware
+router.use('/:userId/reactions', reactionRouter);
+router.use('/:userId/comments', commentRouter);
 
 router.get(
   '/',
@@ -50,31 +63,39 @@ router.post(
 );
 
 router.put(
-  '/:id',
-  handleAsync(async (req: Request, res: Response) => {
-    const updatedUser = await userService.update(
-      Number(req.params.id),
-      req.body,
-    );
-    res.status(200).json({
-      data: {
-        updatedUser,
-      },
-    });
-  }),
+  '/',
+  validateLogin,
+  handleAsync(
+    async (req: RequestWithUser, res: Response, next: NextFunction) => {
+      const userId = req?.user?.id;
+      if (!userId) return next(new AppError(400, `UserId not present`));
+      const updatedUser = await userService.update(userId, req.body);
+
+      res.status(200).json({
+        data: {
+          updatedUser,
+        },
+      });
+    },
+  ),
 );
 
 router.delete(
-  '/:id',
-  handleAsync(async (req: Request, res: Response) => {
-    const deleted = await userService.delete(Number(req.params.id));
-    console.log('deleted: ', deleted);
-    res.status(204).json({
-      data: {
-        deleted,
-      },
-    });
-  }),
+  '/',
+  validateLogin,
+  handleAsync(
+    async (req: RequestWithUser, res: Response, next: NextFunction) => {
+      const userId = req?.user?.id;
+      if (!userId) return next(new AppError(400, `UserId not present`));
+      const deleted = await userService.delete(Number(req.params.id));
+
+      res.status(204).json({
+        data: {
+          deleted,
+        },
+      });
+    },
+  ),
 );
 
 export default router;

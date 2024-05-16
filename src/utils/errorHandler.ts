@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { AppError, AppErrorInterface } from './error';
 
 const sendErrorDev = (err: AppErrorInterface, res: Response) => {
@@ -32,7 +32,6 @@ export const globalErrorHandler = (
   err: AppError,
   req: Request,
   res: Response,
-  next: NextFunction,
 ) => {
   err.statusCode = err.statusCode || 500;
   process.env.NODE_ENV === 'production'
