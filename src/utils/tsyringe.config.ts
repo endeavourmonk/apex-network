@@ -1,22 +1,30 @@
 import { container } from 'tsyringe';
 import { PrismaClient } from '@prisma/client';
-import { UserRepository } from '../repositories/userRepository.interface.ts';
-import { UserRepositoryPrisma } from '../repositories/userRepositoryPrisma.ts';
-import { IUserService } from '../services/userService.interface.ts';
-import { UserService } from '../services/userService.ts';
-import { PostRepository } from '../repositories/postRepository.interface.ts';
-import { PostRepositoryPrisma } from '../repositories/postRepositoryPrisma.ts';
-import { IPostService } from '../services/postService.interface.ts';
-import { PostService } from '../services/postService.ts';
-import { JobRepository } from '../repositories/jobRepository.interface.ts';
-import { JobRepositoryPrisma } from '../repositories/jobRepository.prisma.ts';
-import { IJobService } from '../services/jobService.interface.ts';
-import { JobService } from '../services/jobService.ts';
+import { UserRepository } from '../repositories/userRepository.interface';
+import { UserRepositoryPrisma } from '../repositories/userRepositoryPrisma';
+import { IUserService } from '../services/userService.interface';
+import { UserService } from '../services/userService';
+import { PostRepository } from '../repositories/postRepository.interface';
+import { PostRepositoryPrisma } from '../repositories/postRepositoryPrisma';
+import { IPostService } from '../services/postService.interface';
+import { PostService } from '../services/postService';
+import { JobRepository } from '../repositories/jobRepository.interface';
+import { JobRepositoryPrisma } from '../repositories/jobRepositoryPrisma';
+import { IJobService } from '../services/jobService.interface';
+import { JobService } from '../services/jobService';
+import { ApplicationRepository } from '../repositories/applicationRepository.interface';
+import { ApplicationRepositoryPrisma } from '../repositories/applicationRepositoryPrisma';
+import { IApplicationService } from '../services/applicationService.interface';
+import { ApplicationService } from '../services/applicationService';
+import { ReactionRepository } from '../repositories/reactionRepository.interface';
+import { ReactionRepositoryPrisma } from '../repositories/reactionRepositoryPrisma';
+import { IReactionService } from '../services/reactionService.interface';
+import { ReactionService } from '../services/reactionService';
 
-// prisma client setup
+// Prisma Client Setup
 container.register('PrismaClient', { useValue: new PrismaClient() });
 
-// user setup
+// User Setup
 container.register<UserRepository>('UserRepository', {
   useClass: UserRepositoryPrisma,
 });
@@ -25,7 +33,7 @@ container.register<IUserService>('IUserService', {
   useClass: UserService,
 });
 
-// post setup
+// Post Setup
 container.register<PostRepository>('PostRepository', {
   useClass: PostRepositoryPrisma,
 });
@@ -34,11 +42,31 @@ container.register<IPostService>('IPostService', {
   useClass: PostService,
 });
 
-// jobs setup
+// Job Setup
 container.register<JobRepository>('JobRepository', {
   useClass: JobRepositoryPrisma,
 });
 
 container.register<IJobService>('IJobService', {
   useClass: JobService,
+});
+
+// Application Setup
+container.register<ApplicationRepository>('ApplicationRepository', {
+  useClass: ApplicationRepositoryPrisma,
+});
+
+container.register<IApplicationService>('IApplicationService', {
+  useClass: ApplicationService,
+});
+
+// Connectoin Setup
+
+// Reaction Setup
+container.register<ReactionRepository>('ReactionRepository', {
+  useClass: ReactionRepositoryPrisma,
+});
+
+container.register<IReactionService>('IReactionService', {
+  useClass: ReactionService,
 });

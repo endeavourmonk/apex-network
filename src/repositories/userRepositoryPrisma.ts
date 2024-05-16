@@ -1,26 +1,65 @@
 import { PrismaClient, User } from '@prisma/client';
 import { injectable, inject } from 'tsyringe';
-import { UserRepository } from './userRepository.interface.ts';
+import { UserRepository } from './userRepository.interface';
+
+interface UserFilters {
+  name?: string;
+  username?: string;
+  createdAt?: string;
+  userLevel?: number;
+  userType?: string;
+}
+
+const createUserPrismaFilter = (filters: UserFilters) => {
+  const whereClause: { [key: string]: unknown } = {};
+
+  if (filters.name)
+    whereClause.name = {
+      startsWith: filters.name,
+      mode: 'insensitive',
+    };
+  if (filters.username)
+    whereClause.username = {
+      startsWith: filters.username,
+      mode: 'insensitive',
+    };
+  if (filters.createdAt) whereClause.createdAt = filters.createdAt;
+  if (filters.userLevel) whereClause.userLevel = Number(filters.userLevel);
+  if (filters.userType)
+    whereClause.userType = {
+      equals: filters.userType,
+    };
+
+  return whereClause;
+};
 
 @injectable()
 export class UserRepositoryPrisma implements UserRepository {
-  // private prisma: PrismaClient;
-
-  // constructor() {
-  //   this.prisma = new PrismaClient();
-  // }
-
   constructor(@inject('PrismaClient') private prisma: PrismaClient) {}
 
-  async getAll(): Promise<User[]> {
-    return this.prisma.user.findMany();
+  async getAll(queryObject?: object): Promise<User[]> {
+    const whereClause = createUserPrismaFilter(queryObject!);
+    console.log('created filter', whereClause);
+
+    return this.prisma.user.findMany({
+      where: whereClause,
+    });
+  }
+
+  async getByEmail(email: string): Promise<User | null> {
+    return this.prisma.user.findFirst({ where: { email } });
   }
 
   async getById(id: number): Promise<User | null> {
-    return this.prisma.user.findUnique({ where: { id } });
+    return this.prisma.user.findUnique({
+      where: { id },
+      include: {
+        posts: true,
+      },
+    });
   }
 
-  async create(user: Omit<User, 'id'>): Promise<User> {
+  async create(user: User): Promise<User> {
     return this.prisma.user.create({ data: user });
   }
 
@@ -28,8 +67,7 @@ export class UserRepositoryPrisma implements UserRepository {
     return this.prisma.user.update({ where: { id }, data: user });
   }
 
-  async delete(id: number): Promise<boolean> {
-    const deletedUser = await this.prisma.user.delete({ where: { id } });
-    return !!deletedUser;
+  delete(id: number): Promise<User> {
+    return this.prisma.user.delete({ where: { id } });
   }
 }

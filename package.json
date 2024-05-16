@@ -2,18 +2,16 @@
   "name": "apex-network",
   "version": "1.0.0",
   "description": "professional platform for top 5% software engineers.",
-  "main": "src/index.ts",
+  "main": "src/index",
   "repository": "https://github.com/endeavourmonk/apex-network.git",
   "author": "Ujjawal, Pratham",
   "license": "MIT",
   "private": true,
-  "type": "module",
   "scripts": {
-    "start": "node --loader ts-node/esm src/index.ts",
-    "start:watch": "nodemon --watch src --ext ts --exec npm run start",
-    "start:prod": "NODE_ENV=production nodemon --watch src --ext ts --exec npm run start",
-    "lint": "lint-staged",
     "build": "tsc --build",
+    "start": " NODE_ENV=production node ./dist/index.js",
+    "start:dev": "nodemon ./src/index.ts",
+    "lint": "lint-staged",
     "clean": "tsc --build --clean"
   },
   "husky": {
@@ -45,9 +43,13 @@
   },
   "dependencies": {
     "@prisma/client": "^5.12.1",
+    "@types/jsonwebtoken": "^9.0.6",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "google-auth-library": "^9.7.0",
+    "jsonwebtoken": "^9.0.2",
     "reflect-metadata": "^0.2.1",
-    "tsyringe": "^4.8.0"
+    "tsyringe": "^4.8.0",
+    "zod": "^3.23.0"
   }
 }

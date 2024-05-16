@@ -1,59 +1,105 @@
 import express, { Request, Response, NextFunction } from 'express';
 import { container } from 'tsyringe';
-import { PostService } from '../services/postService.ts';
-import handleAsync from '../utils/handleAsync.ts';
-import { AppError } from '../utils/error.ts';
+
+import handleAsync from '../utils/handleAsync';
+import { AppError } from '../utils/error';
+import { validateLogin } from '../middlewares/validateLogin';
+import { User } from '@prisma/client';
+import { PostService } from '../services/postService';
+import reactionRouter from './reactionController';
+import commentRouter from './commentController';
 
 const router = express.Router();
+
 const postService = container.resolve(PostService);
+
+interface RequestWithUser extends Request {
+  user?: User;
+}
+
+// route middleware
+router.use('/:postId/reactions', reactionRouter);
+router.use('/:postId/comments', commentRouter);
 
 router.get(
   '/',
-  handleAsync(async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const posts = await postService.getAll();
-      if (!posts) return new AppError(404, `Posts not found`);
-      res.json(posts);
-    } catch (err) {
-      next(err);
-    }
-  }),
+  validateLogin,
+  handleAsync(
+    async (req: RequestWithUser, res: Response, next: NextFunction) => {
+      const queries = req.query;
+      const posts = await postService.getAll(queries);
+      if (!posts) return next(new AppError(404, `Posts not found`));
+      console.log(req.user);
+
+      res.status(200).json({
+        results: posts.length,
+        data: {
+          posts,
+        },
+      });
+    },
+  ),
 );
 
 router.get(
   '/:id',
-  handleAsync(async (req: Request, res: Response) => {
+  handleAsync(async (req: Request, res: Response, next: NextFunction) => {
     const post = await postService.getById(Number(req.params.id));
-    if (!post) return new AppError(404, `Post not found`);
-    res.json(post);
+    if (!post) return next(new AppError(404, `Post not found`));
+    res.status(200).json({
+      data: {
+        post,
+      },
+    });
   }),
 );
 
 router.post(
   '/',
-  handleAsync(async (req: Request, res: Response) => {
+  validateLogin,
+  handleAsync(async (req: RequestWithUser, res: Response) => {
+    req.body.authorId = req.user?.id;
     const newPost = await postService.create(req.body);
-    res.json(newPost);
+    res.status(201).json({
+      data: {
+        newPost,
+      },
+    });
   }),
 );
 
 router.put(
   '/:id',
-  handleAsync(async (req: Request, res: Response) => {
-    const updatedPost = await postService.update(
-      Number(req.params.id),
-      req.body,
-    );
-    res.json(updatedPost);
-  }),
+  validateLogin,
+  handleAsync(
+    async (req: RequestWithUser, res: Response, next: NextFunction) => {
+      const postId = Number(req?.params?.id);
+      const authorId = req.user?.id;
+      if (!authorId) return next(new AppError(400, `authorId not found.`));
+      const updatedPost = await postService.update(postId, authorId, req?.body);
+      // console.log(req.body);
+
+      res.status(200).json({
+        data: {
+          updatedPost,
+        },
+      });
+    },
+  ),
 );
 
 router.delete(
   '/:id',
-  handleAsync(async (req: Request, res: Response) => {
-    const deleted = await postService.delete(Number(req.params.id));
-    res.json({ deleted });
-  }),
+  validateLogin,
+  handleAsync(
+    async (req: RequestWithUser, res: Response, next: NextFunction) => {
+      const postId = Number(req?.params?.id);
+      const authorId = req.user?.id;
+      if (!authorId) return next(new AppError(400, `authorId not found.`));
+      await postService.delete(postId, authorId);
+      res.status(204).end();
+    },
+  ),
 );
 
 export default router;

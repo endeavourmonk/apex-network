@@ -2,8 +2,8 @@ import { Job } from '@prisma/client';
 
 export interface IJobService {
   getAll(): Promise<Job[]>;
-  getById(JobID: number): Promise<Job | null>;
-  create(Job: Omit<Job, 'JobID'>): Promise<Job>;
-  update(JobID: number, Jobs: Job): Promise<Job | null>;
-  delete(JobID: number): Promise<boolean>;
+  getById(jobId: number): Promise<Job | null>;
+  create(Job: Job): Promise<Job>;
+  update(jobId: number, Jobs: Job): Promise<Job | null>;
+  delete(jobId: number): Promise<boolean>;
 }

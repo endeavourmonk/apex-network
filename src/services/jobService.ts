@@ -1,7 +1,7 @@
 import { Job } from '@prisma/client';
 import { inject, injectable } from 'tsyringe';
-import { JobRepository } from '../repositories/jobRepository.interface.ts';
-import { IJobService } from './jobService.interface.ts';
+import { JobRepository } from '../repositories/jobRepository.interface';
+import { IJobService } from './jobService.interface';
 
 @injectable()
 export class JobService implements IJobService {
@@ -10,16 +10,16 @@ export class JobService implements IJobService {
   getAll(): Promise<Job[]> {
     return this.JobRepository.getAll();
   }
-  getById(JobID: number): Promise<Job | null> {
-    return this.JobRepository.getById(JobID);
+  getById(jobId: number): Promise<Job | null> {
+    return this.JobRepository.getById(jobId);
   }
-  create(Job: Omit<Job, 'JobID'>): Promise<Job> {
+  create(Job: Job): Promise<Job> {
     return this.JobRepository.create(Job);
   }
-  update(JobID: number, Job: Job): Promise<Job | null> {
-    return this.JobRepository.update(JobID, Job);
+  update(jobId: number, Job: Job): Promise<Job | null> {
+    return this.JobRepository.update(jobId, Job);
   }
-  delete(JobID: number): Promise<boolean> {
-    return this.JobRepository.delete(JobID);
+  delete(jobId: number): Promise<boolean> {
+    return this.JobRepository.delete(jobId);
   }
 }

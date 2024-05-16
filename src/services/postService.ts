@@ -1,7 +1,7 @@
 import { Post } from '@prisma/client';
 import { inject, injectable } from 'tsyringe';
-import { PostRepository } from '../repositories/postRepository.interface.ts';
-import { IPostService } from './postService.interface.ts';
+import { PostRepository } from '../repositories/postRepository.interface';
+import { IPostService } from './postService.interface';
 
 @injectable()
 export class PostService implements IPostService {
@@ -9,19 +9,25 @@ export class PostService implements IPostService {
     @inject('PostRepository') private postRepository: PostRepository,
   ) {}
 
-  getAll(): Promise<Post[]> {
-    return this.postRepository.getAll();
+  getAll(filter?: object): Promise<Post[]> {
+    const whereClause = filter ?? {};
+    return this.postRepository.getAll(whereClause);
   }
-  getById(PostID: number): Promise<Post | null> {
-    return this.postRepository.getById(PostID);
+  getById(postId: number): Promise<Post | null> {
+    return this.postRepository.getById(postId);
   }
-  create(Post: Omit<Post, 'PostID'>): Promise<Post> {
+  create(Post: Post): Promise<Post> {
     return this.postRepository.create(Post);
   }
-  update(PostID: number, Post: Post): Promise<Post | null> {
-    return this.postRepository.update(PostID, Post);
+  update(
+    postId: number,
+    authorId: number,
+    updateData: Post,
+  ): Promise<Post | null> {
+    return this.postRepository.update(postId, authorId, updateData);
   }
-  delete(PostID: number): Promise<boolean> {
-    return this.postRepository.delete(PostID);
+
+  delete(postId: number, authorId: number): Promise<boolean> {
+    return this.postRepository.delete(postId, authorId);
   }
 }

@@ -1,8 +1,8 @@
 import express, { Request, Response, NextFunction } from 'express';
 import { container } from 'tsyringe';
-import { UserService } from '../services/userService.ts';
-import handleAsync from '../utils/handleAsync.ts';
-import { AppError } from '../utils/error.ts';
+import { UserService } from '../services/userService';
+import handleAsync from '../utils/handleAsync';
+import { AppError } from '../utils/error';
 
 const router = express.Router();
 const userService = container.resolve(UserService);
@@ -10,20 +10,17 @@ const userService = container.resolve(UserService);
 router.get(
   '/',
   handleAsync(async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const users = await userService.getAll();
+    const queries = req.query;
+    const users = await userService.getAll(queries);
 
-      if (!users.length) return next(new AppError(404, `No users found.`));
+    if (!users.length) return next(new AppError(404, `No users found.`));
 
-      res.status(200).json({
-        results: users.length,
-        data: {
-          users,
-        },
-      });
-    } catch (err) {
-      next(err);
-    }
+    res.status(200).json({
+      results: users.length,
+      data: {
+        users,
+      },
+    });
   }),
 );
 
@@ -44,7 +41,11 @@ router.post(
   '/',
   handleAsync(async (req: Request, res: Response) => {
     const newUser = await userService.create(req.body);
-    res.json(newUser);
+    res.status(201).json({
+      data: {
+        newUser,
+      },
+    });
   }),
 );
 
@@ -55,7 +56,11 @@ router.put(
       Number(req.params.id),
       req.body,
     );
-    res.json(updatedUser);
+    res.status(200).json({
+      data: {
+        updatedUser,
+      },
+    });
   }),
 );
 
@@ -63,7 +68,12 @@ router.delete(
   '/:id',
   handleAsync(async (req: Request, res: Response) => {
     const deleted = await userService.delete(Number(req.params.id));
-    res.json({ deleted });
+    console.log('deleted: ', deleted);
+    res.status(204).json({
+      data: {
+        deleted,
+      },
+    });
   }),
 );
 

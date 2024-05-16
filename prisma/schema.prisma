@@ -14,21 +14,37 @@ datasource db {
 }
 
 model User {
-  id          Int           @id @default(autoincrement())
-  email       String        @unique @db.VarChar(50)
-  name        String?
-  UserType    UserType
-  UserStatus  UserStatus
-  UserLevel   Int           @default(1)
-  CreatedAt   DateTime      @default(now())
-  Posts       Post[]
-  Connections Connections[]
+  id         Int        @id @default(autoincrement())
+  username   String     @unique @db.VarChar(320)
+  email      String     @unique @db.VarChar(320)
+  name       String
+  gender     Gender     @default(Male)
+  about      String     @default("N/A") @db.VarChar(500)
+  skills     String     @default("None")
+  photoUrl   String     @default("https://res.cloudinary.com/cloudimagestore-/image/upload/f_auto,q_auto/v1/Assets/icdn8f70m5fw7kyljdha")
+  userType   UserType   @default(Developer)
+  userStatus UserStatus @default(Active)
+  userLevel  Int        @default(1)
+  createdAt  DateTime   @default(now())
+  openToWork Boolean    @default(false)
 
-  Jobs         Job[]
-  Applications Application[]
+  posts       Post[]
+  connections Connections[]
+
+  jobs         Job[]
+  applications Application[]
 
   requesterUser Connections[] @relation("RequesterToUsers")
   requesteeUser Connections[] @relation("RequesteeToUsers")
+
+  reactions Reaction[]
+  comments  Comment[]
+}
+
+enum Gender {
+  Male
+  Female
+  Other
 }
 
 enum UserType {
@@ -43,33 +59,84 @@ enum UserStatus {
 }
 
 model Post {
-  PostID      Int      @id @default(autoincrement())
-  UserID      Int
-  PostTitle   String
-  isUpdated   Boolean  @default(false)
-  updatedAt   DateTime @updatedAt
-  PostDate    DateTime
-  PostContent String
-  PostType    PostType
-  PhotoURL    String?
+  id            Int      @id @default(autoincrement())
+  postTitle     String?
+  isUpdated     Boolean  @default(false)
+  updatedAt     DateTime @updatedAt
+  postDate      DateTime @default(now())
+  postContent   String?
+  postType      PostType @default(Post)
+  photoURL      String?
+  reactionCount Int      @default(0)
 
-  User   User? @relation(fields: [userId], references: [id])
-  userId Int?
+  author   User @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  authorId Int
+
+  reactions Reaction[]
+  comments  Comment[]
 }
 
 enum PostType {
   Post
+  Article
+}
+
+model Reaction {
+  id Int @id @default(autoincrement())
+
+  postId Int?
+  post   Post? @relation(fields: [postId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  commentId Int?
+  comment   Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  authorId Int
+  author   User @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  reaction  ReactionType @default(Like)
+  reactedAt DateTime     @default(now())
+
+  @@unique([postId, authorId])
+  @@unique([commentId, authorId])
+}
+
+enum ReactionType {
+  Like
+  Dislike
+  Insightful
+  Support
+  Celebrate
+  Love
+  Funny
+  Sad
+}
+
+model Comment {
+  id       Int  @id @default(autoincrement())
+  post     Post @relation(fields: [postId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  postId   Int
+  author   User @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  authorId Int
+
+  parentId      Int?
+  parentComment Comment?  @relation("subComment", fields: [parentId], references: [id])
+  children      Comment[] @relation("subComment")
+
+  commentText String     @db.VarChar(5000)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  Reaction    Reaction[]
 }
 
 model Connections {
-  ConnectionID     Int              @id
-  Requester        Int
-  Requestee        Int
-  ConnectionStatus ConnectionStatus
-  requesterUser    User             @relation("RequesterToUsers", fields: [Requester], references: [id])
-  requesteeUser    User             @relation("RequesteeToUsers", fields: [Requestee], references: [id])
-  Users            User?            @relation(fields: [usersUserID], references: [id])
-  usersUserID      Int?
+  id               Int              @id @default(autoincrement())
+  requester        Int
+  requestee        Int
+  connectionStatus ConnectionStatus
+  requesterUser    User             @relation("RequesterToUsers", fields: [requester], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  requesteeUser    User             @relation("RequesteeToUsers", fields: [requestee], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  users            User?            @relation(fields: [usersUserId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  usersUserId      Int?
   requestedTime    DateTime         @default(now())
 }
 
@@ -80,22 +147,24 @@ enum ConnectionStatus {
 }
 
 model Job {
-  JobID          Int           @id @default(autoincrement())
-  UserID         Int
-  JobTitle       String        @db.VarChar(100)
-  JobDescription String
-  JobDate        DateTime
-  user           User          @relation(fields: [UserID], references: [id])
+  id             Int           @id @default(autoincrement())
+  jobTitle       String        @db.VarChar(100)
+  jobDescription String
+  jobDate        DateTime
+  author         User          @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  authorId       Int
   applications   Application[]
 }
 
 model Application {
-  ApplicationID     Int               @id
-  JobID             Int
-  Applicant         Int
-  ApplicationStatus ApplicationStatus
-  job               Job               @relation(fields: [JobID], references: [JobID])
-  user              User              @relation(fields: [Applicant], references: [id])
+  id                Int               @id @default(autoincrement())
+  jobId             Int
+  applicant         Int
+  applicationStatus ApplicationStatus
+  resumeUrl         String
+  CvUrl             String
+  job               Job               @relation(fields: [jobId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  user              User              @relation(fields: [applicant], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 enum ApplicationStatus {
