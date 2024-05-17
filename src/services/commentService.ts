@@ -9,24 +9,31 @@ export class CommentService implements ICommentService {
     @inject('CommentRepository') private commentRepository: CommentRepository,
   ) {}
 
-  getAll(queryObject?: {
-    postId?: number;
-    userId?: number;
-  }): Promise<Comment[]> {
-    const whereClause = queryObject ?? {};
+  getAll(queryObject?: { [key: string]: unknown }): Promise<Comment[]> {
+    const whereClause: { [key: string]: unknown } = {};
+    if (queryObject?.postId) whereClause.postId = queryObject.postId;
+    if (queryObject?.userId) whereClause.authorId = queryObject.userId;
+    console.log(whereClause);
     return this.commentRepository.getAll(whereClause);
   }
 
-  getById(postId: number): Promise<Comment | null> {
-    return this.commentRepository.getById(postId);
+  getById(id: number): Promise<Comment | null> {
+    return this.commentRepository.getById(id);
   }
-  create(Comment: Comment): Promise<Comment> {
-    return this.commentRepository.create(Comment);
+
+  create(data: Comment): Promise<Comment> {
+    return this.commentRepository.create(data);
   }
-  update(commentId: number, updatedComent: Comment): Promise<Comment | null> {
-    return this.commentRepository.update(commentId, updatedComent);
+
+  update(
+    commentId: number,
+    authorId: number,
+    updatedComent: Comment,
+  ): Promise<Comment | null> {
+    return this.commentRepository.update(commentId, authorId, updatedComent);
   }
-  delete(commentId: number): Promise<boolean> {
-    return this.commentRepository.delete(commentId);
+
+  delete(commentId: number, authorId: number): Promise<boolean> {
+    return this.commentRepository.delete(commentId, authorId);
   }
 }

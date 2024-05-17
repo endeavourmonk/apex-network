@@ -6,16 +6,7 @@ import { CommentRepository } from './commentRepository.interface';
 export class CommentRepositoryPrisma implements CommentRepository {
   constructor(@inject('PrismaClient') private prisma: PrismaClient) {}
 
-  async getAll(queryObject?: {
-    postId?: number;
-    userId?: number;
-  }): Promise<Comment[]> {
-    // creating prisma filters
-    const whereClause: { [key: string]: unknown } = {};
-    if (queryObject?.postId) whereClause.postId = queryObject.postId;
-    if (queryObject?.userId) whereClause.authorId = queryObject.userId;
-
-    console.log(whereClause);
+  async getAll(whereClause?: object): Promise<Comment[]> {
     return this.prisma.comment.findMany({
       where: whereClause,
     });
@@ -25,16 +16,22 @@ export class CommentRepositoryPrisma implements CommentRepository {
     return this.prisma.comment.findUnique({ where: { id } });
   }
 
-  async create(Comment: Comment): Promise<Comment> {
-    return this.prisma.comment.create({ data: Comment });
+  async create(data: Comment): Promise<Comment> {
+    return this.prisma.comment.create({ data });
   }
 
-  async update(id: number, Comment: Comment): Promise<Comment | null> {
-    return this.prisma.comment.update({ where: { id }, data: Comment });
+  async update(
+    id: number,
+    authorId: number,
+    data: Comment,
+  ): Promise<Comment | null> {
+    return this.prisma.comment.update({ where: { id, authorId }, data });
   }
 
-  async delete(id: number): Promise<boolean> {
-    const deletedPosts = await this.prisma.comment.delete({ where: { id } });
+  async delete(id: number, authorId: number): Promise<boolean> {
+    const deletedPosts = await this.prisma.comment.delete({
+      where: { id, authorId },
+    });
     return !!deletedPosts;
   }
 }

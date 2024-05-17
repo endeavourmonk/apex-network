@@ -68,6 +68,7 @@ model Post {
   postType      PostType @default(Post)
   photoURL      String?
   reactionCount Int      @default(0)
+  commentsCount Int      @default(0)
 
   author   User @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   authorId Int

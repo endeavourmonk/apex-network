@@ -110,6 +110,12 @@ router.post(
       const postId = Number(req.params.postId);
       const commentId = Number(req.params.commentId);
 
+      const reactionData = {
+        authorId,
+        reaction: req.body.reaction,
+        ...(postId ? { postId } : { commentId }),
+      };
+
       const ReactionCreateSchema = z
         .object({
           authorId: z.number(),
@@ -120,12 +126,6 @@ router.post(
         .refine((data) => data.postId || data.commentId, {
           message: 'At least one of postId or commentId must be present',
         });
-
-      const reactionData = {
-        authorId,
-        reaction: req.body.reaction,
-        ...(postId ? { postId } : { commentId }),
-      };
 
       console.log('reactiondata: ', reactionData);
       const validatedData = ReactionCreateSchema.safeParse(reactionData);

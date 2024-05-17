@@ -1,12 +1,9 @@
 import { Comment } from '@prisma/client';
 
 export interface ICommentService {
-  getAll(queryObject?: {
-    postId?: number;
-    userId?: number;
-  }): Promise<Comment[]>;
-  getById(postId: number): Promise<Comment | null>;
-  create(Comment: Comment): Promise<Comment>;
-  update(postId: number, Posts: Comment): Promise<Comment | null>;
-  delete(postId: number): Promise<boolean>;
+  getAll(whereClause?: object): Promise<Comment[]>;
+  getById(id: number): Promise<Comment | null>;
+  create(data: Comment): Promise<Comment>;
+  update(id: number, authorId: number, data: Comment): Promise<Comment | null>;
+  delete(id: number, authorId: number): Promise<boolean>;
 }
