@@ -2,12 +2,16 @@ import express, { Request, Response, NextFunction } from 'express';
 import { container } from 'tsyringe';
 
 import handleAsync from '../utils/handleAsync';
-import { AppError } from '../utils/error';
-import { CommentService } from '../services/commentService';
-import { validateLogin } from '../middlewares/validateLogin';
 import { User } from '@prisma/client';
+import { AppError } from '../utils/AppError';
+import { CommentService } from '../services/commentService';
+import reactionRouter from './reactionController';
+import { validateLogin } from '../middlewares/validateLogin';
+
+// route middleware
 
 const router = express.Router({ mergeParams: true });
+router.use('/:commentId/reactions', reactionRouter);
 
 const commentService = container.resolve(CommentService);
 

@@ -1,5 +1,5 @@
-import { Request, Response } from 'express';
-import { AppError, AppErrorInterface } from './error';
+import { NextFunction, Request, Response } from 'express';
+import { AppError, AppErrorInterface } from '../utils/AppError';
 
 const sendErrorDev = (err: AppErrorInterface, res: Response) => {
   res.status(err.statusCode).json({
@@ -32,6 +32,7 @@ export const globalErrorHandler = (
   err: AppError,
   req: Request,
   res: Response,
+  next: NextFunction,
 ) => {
   err.statusCode = err.statusCode || 500;
   process.env.NODE_ENV === 'production'

@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { container } from 'tsyringe';
 import jwt from 'jsonwebtoken';
-import { AppError } from '../utils/error';
+import { AppError } from '../utils/AppError';
 import handleAsync from '../utils/handleAsync';
 import { User } from '@prisma/client';
 import { UserService } from '../services/userService';

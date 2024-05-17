@@ -15,7 +15,7 @@ export class ReactionService implements IReactionService {
     if (filters?.postId) whereClause.postId = filters.postId;
     if (filters?.authorId) whereClause.authorId = filters.authorId;
 
-    return this.reactionRepository.getAll();
+    return this.reactionRepository.getAll(whereClause);
   }
 
   update(

@@ -9,7 +9,7 @@ import postRouter from './controllers/postController';
 import jobRouter from './controllers/jobController';
 import applicationRouter from './controllers/applicationController';
 import authRouter from './controllers/authContoller';
-import { globalErrorHandler } from './utils/errorHandler';
+import { globalErrorHandler } from './middlewares/errorHandler';
 
 const app = express();
 const PORT = process.env.PORT ?? 3000;

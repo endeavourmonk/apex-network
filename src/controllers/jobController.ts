@@ -2,7 +2,7 @@ import express, { Request, Response, NextFunction } from 'express';
 import { container } from 'tsyringe';
 import handleAsync from '../utils/handleAsync';
 import { JobService } from '../services/jobService';
-import { AppError } from '../utils/error';
+import { AppError } from '../utils/AppError';
 
 const router = express.Router();
 const jobService = container.resolve(JobService);

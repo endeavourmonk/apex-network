@@ -3,7 +3,7 @@ import { container } from 'tsyringe';
 
 import { User } from '@prisma/client';
 import { UserService } from '../services/userService';
-import { AppError } from '../utils/error';
+import { AppError } from '../utils/AppError';
 import handleAsync from '../utils/handleAsync';
 import reactionRouter from './reactionController';
 import commentRouter from './commentController';

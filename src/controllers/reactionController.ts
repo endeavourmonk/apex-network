@@ -3,10 +3,11 @@ import { container } from 'tsyringe';
 import { z } from 'zod';
 
 import handleAsync from '../utils/handleAsync';
-import { AppError } from '../utils/error';
+import { AppError } from '../utils/AppError';
 import { ReactionService } from '../services/reactionService';
 import { validateLogin } from '../middlewares/validateLogin';
 import { Reaction, User } from '@prisma/client';
+import { fromError } from 'zod-validation-error';
 
 const router = express.Router({ mergeParams: true });
 
@@ -18,6 +19,7 @@ interface RequestWithUser extends Request {
 
 /* Routes will be like:
  * /posts/:postId/reactions
+ * /posts/:posiId/comments/:commentId/reactions
  * /users/:userId/reactions
  */
 
@@ -25,20 +27,28 @@ interface RequestWithUser extends Request {
 router.get(
   '/',
   handleAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const { params } = req;
     const filters = {
-      postId: params.postId && parseInt(params.postId),
-      authorId: params.authorId && parseInt(params.authorId),
+      postId:
+        req.params?.postId &&
+        !req.params.commentId &&
+        parseInt(req.params.postId),
+      commentId: req.params?.commentId && parseInt(req.params.commentId),
+      authorId: req.params?.authorId && parseInt(req.params.authorId),
     };
-
+    console.log(filters);
     const ReactionFilterSchema = z.object({
       postId: z.number().optional(),
+      commentId: z.number().optional(),
       authorId: z.number().optional(),
     });
 
     const validatedFilters = ReactionFilterSchema.safeParse(filters);
-    if (!validatedFilters.success)
-      return next(new AppError(400, `Invalid filter parameters`));
+    if (!validatedFilters.success) {
+      const validationError = fromError(validatedFilters.error);
+      return next(
+        new AppError(400, `Invalid filter parameters: ${validationError}`),
+      );
+    }
 
     const reactions = await reactionService.getAll(filters);
 
@@ -67,16 +77,15 @@ router.put(
         reaction: z.string(),
       });
 
-      const validationResult = ReactionUpdateSchema.safeParse(req.body);
-      if (!validationResult.success)
+      const validatedData = ReactionUpdateSchema.safeParse(req.body);
+      if (!validatedData.success) {
+        const validationError = fromError(validatedData.error);
         return next(
-          new AppError(
-            400,
-            `Invalid update data: ${validationResult.error.message}`,
-          ),
+          new AppError(400, `Invalid update data: ${validationError}`),
         );
+      }
 
-      const updateData = validationResult.data;
+      const updateData = validatedData.data;
       const updatedReaction = await reactionService.update(
         reactionId,
         authorId,
@@ -98,15 +107,8 @@ router.post(
   handleAsync(
     async (req: RequestWithUser, res: Response, next: NextFunction) => {
       const authorId = req.user?.id;
-      if (!authorId || !req.body.reaction)
-        return next(
-          new AppError(400, 'Missing required data: authorId or reaction'),
-        );
-
-      const { params } = req;
-      const { postId, commentId } = params;
-      if (!postId && !commentId)
-        return next(new AppError(400, `either postId or commentId required.`));
+      const postId = Number(req.params.postId);
+      const commentId = Number(req.params.commentId);
 
       const ReactionCreateSchema = z
         .object({
@@ -125,28 +127,23 @@ router.post(
         ...(postId ? { postId } : { commentId }),
       };
 
-      console.log(reactionData);
+      console.log('reactiondata: ', reactionData);
       const validatedData = ReactionCreateSchema.safeParse(reactionData);
-      if (!validatedData.success)
-        return next(
-          new AppError(
-            400,
-            `Invalid reaction data: ${validatedData.error.message}`,
-          ),
-        );
-
-      const createData = validatedData.data;
-
-      let isReactionCreated = false;
-      if (createData.postId) {
-        isReactionCreated = await reactionService.addPostReaction(
-          createData as Reaction,
-        );
-      } else if (createData.commentId) {
-        isReactionCreated = await reactionService.addCommentReaction(
-          createData as Reaction,
-        );
+      if (!validatedData.success) {
+        const validationError = fromError(validatedData.error);
+        return next(new AppError(400, `Invalid data: ${validationError}`));
       }
+
+      const reactionToCreate = validatedData.data;
+      let isReactionCreated = false;
+
+      reactionToCreate.postId && reactionToCreate.commentId
+        ? (isReactionCreated = await reactionService.addCommentReaction(
+            reactionToCreate as Reaction,
+          ))
+        : (isReactionCreated = await reactionService.addPostReaction(
+            reactionToCreate as Reaction,
+          ));
 
       if (!isReactionCreated)
         return next(new AppError(500, `Reaction not created`));
@@ -158,37 +155,63 @@ router.post(
   ),
 );
 
-// Updating the reactionsCount in the Post table on deletion of a reaction.
-// router.delete(
-//   '/:reactionId',
-//   handleAsync(async (req: Request, res: Response, next: NextFunction) => {
-//     const { postId, reactionId } = req.params;
-//     const isReactionDeleted =
-//       await reactionService.deleteAndDecrementPostReactionCount(
-//         Number(reactionId),
-//         Number(postId),
-//       );
+router.delete(
+  '/:reactionId',
+  validateLogin,
+  handleAsync(
+    async (req: RequestWithUser, res: Response, next: NextFunction) => {
+      const authorId = req.user?.id;
+      const postId = Number(req.params.postId);
+      const commentId = Number(req.params.commentId);
+      const reactionId = Number(req.params.reactionId);
 
-//     if (!isReactionDeleted)
-//       return next(new AppError(500, `Reaction not deleted`));
-//     res.status(204).end();
-//   }),
-// );
+      const ReactionDeleteSchema = z
+        .object({
+          authorId: z.number(),
+          reactionId: z.number(),
+          postId: z.number().optional(),
+          commentId: z.number().optional(),
+        })
+        .refine((data) => data.postId || data.commentId, {
+          message: 'At least one of postId or commentId must be present',
+        });
 
-// just to clean the table leave it as
+      const reactionData = {
+        authorId,
+        reactionId,
+        ...(postId ? { postId } : { commentId }),
+      };
 
-// router.delete('/deleteAll', async (req: Request, res: Response) => {
-//   try {
-//     console.log('delete');
-//     const prisma = new PrismaClient();
-//     await prisma.reaction.deleteMany({
-//       where: {},
-//     });
-//     res.status(200).send('All reactions deleted successfully');
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).send('An error occurred while deleting reactions');
-//   }
-// });
+      console.log('reactionToDelete : ', reactionData);
+      const validatedData = ReactionDeleteSchema.safeParse(reactionData);
+      if (!validatedData.success) {
+        const validationError = fromError(validatedData.error);
+        return next(new AppError(400, `Invalid data: ${validationError}`));
+      }
+
+      const reactionToDelete = validatedData.data;
+      let isReactionCreated = false;
+
+      reactionToDelete.postId && reactionToDelete.commentId
+        ? (isReactionCreated = await reactionService.removeCommentReaction(
+            reactionToDelete.reactionId,
+            reactionToDelete.commentId,
+            reactionToDelete.authorId,
+          ))
+        : (isReactionCreated = await reactionService.removePostReaction(
+            reactionToDelete.reactionId,
+            reactionToDelete.postId!,
+            reactionToDelete.authorId,
+          ));
+
+      if (!isReactionCreated)
+        return next(new AppError(500, `Reaction not deleted`));
+
+      res.status(204).json({
+        message: `success`,
+      });
+    },
+  ),
+);
 
 export default router;
