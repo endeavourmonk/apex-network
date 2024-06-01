@@ -13,7 +13,9 @@ export class ReactionService implements IReactionService {
   getAll(filters?: { [key: string]: unknown }): Promise<Reaction[]> {
     const whereClause: { [key: string]: unknown } = {};
     if (filters?.postId) whereClause.postId = filters.postId;
+    if (filters?.commentId) whereClause.commentId = filters.commentId;
     if (filters?.authorId) whereClause.authorId = filters.authorId;
+    console.log('whereClause', whereClause);
 
     return this.reactionRepository.getAll(whereClause);
   }

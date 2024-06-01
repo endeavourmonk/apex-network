@@ -1,13 +1,13 @@
 import express, { Request, Response, NextFunction } from 'express';
+import { Reaction, User } from '@prisma/client';
 import { container } from 'tsyringe';
+import { fromError } from 'zod-validation-error';
 import { z } from 'zod';
 
 import handleAsync from '../utils/handleAsync';
 import { AppError } from '../utils/AppError';
 import { ReactionService } from '../services/reactionService';
 import { validateLogin } from '../middlewares/validateLogin';
-import { Reaction, User } from '@prisma/client';
-import { fromError } from 'zod-validation-error';
 
 const router = express.Router({ mergeParams: true });
 
@@ -19,7 +19,7 @@ interface RequestWithUser extends Request {
 
 /* Routes will be like:
  * /posts/:postId/reactions
- * /posts/:posiId/comments/:commentId/reactions
+ * /posts/:postId/comments/:commentId/reactions
  * /users/:userId/reactions
  */
 
@@ -28,14 +28,11 @@ router.get(
   '/',
   handleAsync(async (req: Request, res: Response, next: NextFunction) => {
     const filters = {
-      postId:
-        req.params?.postId &&
-        !req.params.commentId &&
-        parseInt(req.params.postId),
+      postId: req.params?.commentId ? undefined : parseInt(req.params?.postId),
       commentId: req.params?.commentId && parseInt(req.params.commentId),
-      authorId: req.params?.authorId && parseInt(req.params.authorId),
+      authorId: req.params?.userId && parseInt(req.params.userId),
     };
-    console.log(filters);
+    console.log({ filters });
     const ReactionFilterSchema = z.object({
       postId: z.number().optional(),
       commentId: z.number().optional(),
@@ -113,7 +110,7 @@ router.post(
       const reactionData = {
         authorId,
         reaction: req.body.reaction,
-        ...(postId ? { postId } : { commentId }),
+        ...(commentId ? { commentId } : { postId }),
       };
 
       const ReactionCreateSchema = z
@@ -127,7 +124,7 @@ router.post(
           message: 'At least one of postId or commentId must be present',
         });
 
-      console.log('reactiondata: ', reactionData);
+      // console.log('reactiondata: ', reactionData);
       const validatedData = ReactionCreateSchema.safeParse(reactionData);
       if (!validatedData.success) {
         const validationError = fromError(validatedData.error);
@@ -136,8 +133,8 @@ router.post(
 
       const reactionToCreate = validatedData.data;
       let isReactionCreated = false;
-
-      reactionToCreate.postId && reactionToCreate.commentId
+      console.log('reactionToCreate', reactionToCreate);
+      reactionToCreate.commentId
         ? (isReactionCreated = await reactionService.addCommentReaction(
             reactionToCreate as Reaction,
           ))
@@ -165,46 +162,58 @@ router.delete(
       const commentId = Number(req.params.commentId);
       const reactionId = Number(req.params.reactionId);
 
-      const ReactionDeleteSchema = z
-        .object({
-          authorId: z.number(),
-          reactionId: z.number(),
-          postId: z.number().optional(),
-          commentId: z.number().optional(),
-        })
-        .refine((data) => data.postId || data.commentId, {
-          message: 'At least one of postId or commentId must be present',
-        });
+      // const ReactionDeleteSchema = z
+      //   .object({
+      //     authorId: z.number(),
+      //     reactionId: z.number(),
+      //     postId: z.number().optional(),
+      //     commentId: z.number().optional(),
+      //   })
+      //   .refine((data) => data.postId || data.commentId, {
+      //     message: 'At least one of postId or commentId must be present',
+      //   });
 
-      const reactionData = {
-        authorId,
-        reactionId,
-        ...(postId ? { postId } : { commentId }),
-      };
+      // const reactionData = {
+      //   authorId,
+      //   reactionId,
+      //   ...(postId ? { postId } : { commentId }),
+      // };
 
-      console.log('reactionToDelete : ', reactionData);
-      const validatedData = ReactionDeleteSchema.safeParse(reactionData);
-      if (!validatedData.success) {
-        const validationError = fromError(validatedData.error);
-        return next(new AppError(400, `Invalid data: ${validationError}`));
-      }
+      // console.log('reactionToDelete : ', reactionData);
+      // const validatedData = ReactionDeleteSchema.safeParse(reactionData);
+      // if (!validatedData.success) {
+      //   const validationError = fromError(validatedData.error);
+      //   return next(new AppError(400, `Invalid data: ${validationError}`));
+      // }
 
-      const reactionToDelete = validatedData.data;
-      let isReactionCreated = false;
+      // const reactionToDelete = validatedData.data;
 
-      reactionToDelete.postId && reactionToDelete.commentId
-        ? (isReactionCreated = await reactionService.removeCommentReaction(
-            reactionToDelete.reactionId,
-            reactionToDelete.commentId,
-            reactionToDelete.authorId,
+      // reactionToDelete.postId && reactionToDelete.commentId
+      //   ? (isReactionDeleted = await reactionService.removeCommentReaction(
+      //       reactionToDelete.reactionId,
+      //       reactionToDelete.commentId,
+      //       reactionToDelete.authorId,
+      //     ))
+      //   : (isReactionDeleted = await reactionService.removePostReaction(
+      //       reactionToDelete.reactionId,
+      //       reactionToDelete.postId!,
+      //       reactionToDelete.authorId,
+      //     ));
+
+      let isReactionDeleted = false;
+      postId && commentId
+        ? (isReactionDeleted = await reactionService.removeCommentReaction(
+            reactionId,
+            commentId,
+            authorId!,
           ))
-        : (isReactionCreated = await reactionService.removePostReaction(
-            reactionToDelete.reactionId,
-            reactionToDelete.postId!,
-            reactionToDelete.authorId,
+        : (isReactionDeleted = await reactionService.removePostReaction(
+            reactionId,
+            postId!,
+            authorId!,
           ));
 
-      if (!isReactionCreated)
+      if (!isReactionDeleted)
         return next(new AppError(500, `Reaction not deleted`));
 
       res.status(204).json({

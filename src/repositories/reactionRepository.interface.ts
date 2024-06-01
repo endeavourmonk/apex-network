@@ -10,6 +10,7 @@ export interface ReactionRepository {
   ): Promise<Reaction | null>;
 
   addPostReaction(data: Reaction): Promise<boolean>;
+
   removePostReaction(
     reactionId: number,
     postId: number,
@@ -17,6 +18,7 @@ export interface ReactionRepository {
   ): Promise<boolean>;
 
   addCommentReaction(data: Reaction): Promise<boolean>;
+
   removeCommentReaction(
     reactionId: number,
     commentId: number,
