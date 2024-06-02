@@ -9,14 +9,14 @@ export interface IReactionService {
     data: Reaction,
   ): Promise<Reaction | null>;
 
-  addPostReaction(data: Reaction): Promise<boolean>;
+  addPostReaction(data: Reaction): Promise<[Reaction, number]>;
   removePostReaction(
     reactionId: number,
     postId: number,
     authorId: number,
   ): Promise<boolean>;
 
-  addCommentReaction(data: Reaction): Promise<boolean>;
+  addCommentReaction(data: Reaction): Promise<[Reaction, number]>;
   removeCommentReaction(
     reactionId: number,
     commentId: number,

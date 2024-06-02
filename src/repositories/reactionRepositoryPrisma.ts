@@ -1,4 +1,4 @@
-import { PrismaClient, Reaction } from '@prisma/client';
+import { Prisma, PrismaClient, Reaction } from '@prisma/client';
 import { injectable, inject } from 'tsyringe';
 import { ReactionRepository } from './reactionRepository.interface';
 // import { PostService } from '../services/postService';
@@ -23,17 +23,24 @@ export class ReactionRepositoryPrisma implements ReactionRepository {
     return this.prisma.reaction.update({ where: { id, authorId }, data: data });
   }
 
-  async addPostReaction(data: Reaction): Promise<boolean> {
+  async addPostReaction(data: Reaction): Promise<[Reaction, number]> {
     try {
       // unique author for every post is handled at schema layer
-      await this.prisma.$transaction([
-        this.prisma.reaction.create({ data: data }),
-        this.prisma.post.update({
-          where: { id: data.postId! },
-          data: { reactionCount: { increment: 1 } },
-        }),
-      ]);
-      return true;
+      const [createdReaction, updatedPost] = await this.prisma.$transaction(
+        [
+          // Create a new reaction for the Post
+          this.prisma.reaction.create({ data: data }),
+          // Increment the reaction count for the corresponding Post
+          this.prisma.post.update({
+            where: { id: data.postId! },
+            data: { reactionCount: { increment: 1 } },
+          }),
+        ],
+        {
+          isolationLevel: Prisma.TransactionIsolationLevel.RepeatableRead,
+        },
+      );
+      return [createdReaction, updatedPost.reactionCount];
     } catch (error) {
       console.error(error);
       throw error;
@@ -46,15 +53,22 @@ export class ReactionRepositoryPrisma implements ReactionRepository {
     authorId: number,
   ): Promise<boolean> {
     try {
-      await this.prisma.$transaction([
-        this.prisma.reaction.delete({
-          where: { id: reactionId, postId, authorId },
-        }),
-        this.prisma.post.update({
-          where: { id: postId },
-          data: { reactionCount: { decrement: 1 } },
-        }),
-      ]);
+      await this.prisma.$transaction(
+        [
+          // Delete a reaction for the Post
+          this.prisma.reaction.delete({
+            where: { id: reactionId, postId, authorId },
+          }),
+          // Decrement the reaction count for the corresponding Post
+          this.prisma.post.update({
+            where: { id: postId },
+            data: { reactionCount: { decrement: 1 } },
+          }),
+        ],
+        {
+          isolationLevel: Prisma.TransactionIsolationLevel.RepeatableRead,
+        },
+      );
       return true;
     } catch (error) {
       console.error(`Transaction failed: ${error}`);
@@ -62,17 +76,24 @@ export class ReactionRepositoryPrisma implements ReactionRepository {
     }
   }
 
-  async addCommentReaction(data: Reaction): Promise<boolean> {
+  async addCommentReaction(data: Reaction): Promise<[Reaction, number]> {
     try {
       // unique author for every post is handled at schema layer
-      await this.prisma.$transaction([
-        this.prisma.reaction.create({ data: data }),
-        this.prisma.comment.update({
-          where: { id: data.commentId! },
-          data: { reactionCount: { increment: 1 } },
-        }),
-      ]);
-      return true;
+      const [createdReaction, updatedComment] = await this.prisma.$transaction(
+        [
+          // Create a new reaction for the Comment
+          this.prisma.reaction.create({ data: data }),
+          // Increment the reaction count for the corresponding Comment
+          this.prisma.comment.update({
+            where: { id: data.commentId! },
+            data: { reactionCount: { increment: 1 } },
+          }),
+        ],
+        {
+          isolationLevel: Prisma.TransactionIsolationLevel.RepeatableRead,
+        },
+      );
+      return [createdReaction, updatedComment.reactionCount];
     } catch (error) {
       console.error(error);
       throw error;
@@ -85,15 +106,22 @@ export class ReactionRepositoryPrisma implements ReactionRepository {
     authorId: number,
   ): Promise<boolean> {
     try {
-      await this.prisma.$transaction([
-        this.prisma.reaction.delete({
-          where: { id: reactionId, commentId, authorId },
-        }),
-        this.prisma.comment.update({
-          where: { id: commentId },
-          data: { reactionCount: { decrement: 1 } },
-        }),
-      ]);
+      await this.prisma.$transaction(
+        [
+          // Delete a reaction for the Comment
+          this.prisma.reaction.delete({
+            where: { id: reactionId, commentId, authorId },
+          }),
+          // Decrement the reaction count for the corresponding Comment
+          this.prisma.comment.update({
+            where: { id: commentId },
+            data: { reactionCount: { decrement: 1 } },
+          }),
+        ],
+        {
+          isolationLevel: Prisma.TransactionIsolationLevel.RepeatableRead,
+        },
+      );
       return true;
     } catch (error) {
       console.error(`Transaction failed: ${error}`);

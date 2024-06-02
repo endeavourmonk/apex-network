@@ -132,21 +132,25 @@ router.post(
       }
 
       const reactionToCreate = validatedData.data;
-      let isReactionCreated = false;
+
       console.log('reactionToCreate', reactionToCreate);
+      let createdData = [];
       reactionToCreate.commentId
-        ? (isReactionCreated = await reactionService.addCommentReaction(
+        ? (createdData = await reactionService.addCommentReaction(
             reactionToCreate as Reaction,
           ))
-        : (isReactionCreated = await reactionService.addPostReaction(
+        : (createdData = await reactionService.addPostReaction(
             reactionToCreate as Reaction,
           ));
 
-      if (!isReactionCreated)
-        return next(new AppError(500, `Reaction not created`));
+      if (!createdData) return next(new AppError(500, `Reaction not created`));
 
       res.status(201).json({
         message: `success`,
+        data: {
+          reaction: createdData[0],
+          reactionCount: createdData[1],
+        },
       });
     },
   ),
@@ -161,44 +165,6 @@ router.delete(
       const postId = Number(req.params.postId);
       const commentId = Number(req.params.commentId);
       const reactionId = Number(req.params.reactionId);
-
-      // const ReactionDeleteSchema = z
-      //   .object({
-      //     authorId: z.number(),
-      //     reactionId: z.number(),
-      //     postId: z.number().optional(),
-      //     commentId: z.number().optional(),
-      //   })
-      //   .refine((data) => data.postId || data.commentId, {
-      //     message: 'At least one of postId or commentId must be present',
-      //   });
-
-      // const reactionData = {
-      //   authorId,
-      //   reactionId,
-      //   ...(postId ? { postId } : { commentId }),
-      // };
-
-      // console.log('reactionToDelete : ', reactionData);
-      // const validatedData = ReactionDeleteSchema.safeParse(reactionData);
-      // if (!validatedData.success) {
-      //   const validationError = fromError(validatedData.error);
-      //   return next(new AppError(400, `Invalid data: ${validationError}`));
-      // }
-
-      // const reactionToDelete = validatedData.data;
-
-      // reactionToDelete.postId && reactionToDelete.commentId
-      //   ? (isReactionDeleted = await reactionService.removeCommentReaction(
-      //       reactionToDelete.reactionId,
-      //       reactionToDelete.commentId,
-      //       reactionToDelete.authorId,
-      //     ))
-      //   : (isReactionDeleted = await reactionService.removePostReaction(
-      //       reactionToDelete.reactionId,
-      //       reactionToDelete.postId!,
-      //       reactionToDelete.authorId,
-      //     ));
 
       let isReactionDeleted = false;
       postId && commentId

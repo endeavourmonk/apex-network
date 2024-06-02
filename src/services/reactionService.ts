@@ -28,7 +28,7 @@ export class ReactionService implements IReactionService {
     return this.reactionRepository.update(id, authorId, data);
   }
 
-  addPostReaction(data: Reaction): Promise<boolean> {
+  addPostReaction(data: Reaction): Promise<[Reaction, number]> {
     return this.reactionRepository.addPostReaction(data);
   }
 
@@ -44,7 +44,7 @@ export class ReactionService implements IReactionService {
     );
   }
 
-  addCommentReaction(data: Reaction): Promise<boolean> {
+  addCommentReaction(data: Reaction): Promise<[Reaction, number]> {
     return this.reactionRepository.addCommentReaction(data);
   }
 
