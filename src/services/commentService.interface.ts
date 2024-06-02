@@ -3,7 +3,11 @@ import { Comment } from '@prisma/client';
 export interface ICommentService {
   getAll(whereClause?: object): Promise<Comment[]>;
   getById(id: number): Promise<Comment | null>;
-  create(data: Comment): Promise<Comment>;
+  createCommentAndIncrementCount(data: Comment): Promise<[Comment, number]>;
   update(id: number, authorId: number, data: Comment): Promise<Comment | null>;
-  delete(id: number, authorId: number): Promise<boolean>;
+  deleteCommentAndDecrementCount(
+    commentId: number,
+    postId: number,
+    authorId: number,
+  ): Promise<boolean>;
 }

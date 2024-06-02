@@ -13,7 +13,10 @@ export class CommentService implements ICommentService {
     const whereClause: { [key: string]: unknown } = {};
     if (queryObject?.postId) whereClause.postId = queryObject.postId;
     if (queryObject?.userId) whereClause.authorId = queryObject.userId;
-    console.log(whereClause);
+    //All base comments have parentId = null
+    whereClause.parentId = queryObject?.parentId ? queryObject.parentId : null;
+
+    console.log('whereClause: ', whereClause);
     return this.commentRepository.getAll(whereClause);
   }
 
@@ -21,19 +24,27 @@ export class CommentService implements ICommentService {
     return this.commentRepository.getById(id);
   }
 
-  create(data: Comment): Promise<Comment> {
-    return this.commentRepository.create(data);
+  createCommentAndIncrementCount(data: Comment): Promise<[Comment, number]> {
+    return this.commentRepository.createCommentAndIncrementCount(data);
   }
 
   update(
     commentId: number,
     authorId: number,
-    updatedComent: Comment,
+    updatedComment: Comment,
   ): Promise<Comment | null> {
-    return this.commentRepository.update(commentId, authorId, updatedComent);
+    return this.commentRepository.update(commentId, authorId, updatedComment);
   }
 
-  delete(commentId: number, authorId: number): Promise<boolean> {
-    return this.commentRepository.delete(commentId, authorId);
+  deleteCommentAndDecrementCount(
+    commentId: number,
+    postId: number,
+    authorId: number,
+  ): Promise<boolean> {
+    return this.commentRepository.deleteCommentAndDecrementCount(
+      commentId,
+      postId,
+      authorId,
+    );
   }
 }
