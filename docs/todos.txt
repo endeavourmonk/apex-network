@@ -1,2 +1,6 @@
 1. move the create prisma filters to the service layer.
 2. instead of just calling the post and comment methods for changing reaction count in reactionRepository, can call service layer.
+4. check about the concurrent connection transaction.
+
+
+3. check wherether user has liked post or comment already.
