@@ -1,5 +1,5 @@
-import { Request, Response, NextFunction } from 'express';
-import { AppError, AppErrorInterface } from './error';
+import { NextFunction, Request, Response } from 'express';
+import { AppError, AppErrorInterface } from '../utils/AppError';
 
 const sendErrorDev = (err: AppErrorInterface, res: Response) => {
   res.status(err.statusCode).json({

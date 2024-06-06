@@ -50,6 +50,7 @@
     "jsonwebtoken": "^9.0.2",
     "reflect-metadata": "^0.2.1",
     "tsyringe": "^4.8.0",
-    "zod": "^3.23.0"
+    "zod": "^3.23.0",
+    "zod-validation-error": "^3.3.0"
   }
 }

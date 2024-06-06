@@ -29,10 +29,14 @@ const createPostPrismaFilter = (filters: PostFilters) => {
 export class PostRepositoryPrisma implements PostRepository {
   constructor(@inject('PrismaClient') private prisma: PrismaClient) {}
 
+  // PENDING: including reactions with post needs optimized approach
   async getAll(queryObject?: object): Promise<Post[]> {
     const whereClause = createPostPrismaFilter(queryObject!);
     return this.prisma.post.findMany({
       where: whereClause,
+      include: {
+        reactions: true,
+      },
     });
   }
 

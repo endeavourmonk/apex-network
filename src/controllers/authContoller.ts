@@ -4,7 +4,7 @@ import { container } from 'tsyringe';
 import { OAuth2Client, TokenPayload } from 'google-auth-library';
 import handleAsync from '../utils/handleAsync';
 import { UserService } from '../services/userService';
-import { AppError } from '../utils/error';
+import { AppError } from '../utils/AppError';
 
 const userService = container.resolve(UserService);
 

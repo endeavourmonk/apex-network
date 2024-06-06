@@ -2,7 +2,7 @@ import express, { Request, Response, NextFunction } from 'express';
 import { container } from 'tsyringe';
 
 import handleAsync from '../utils/handleAsync';
-import { AppError } from '../utils/error';
+import { AppError } from '../utils/AppError';
 import { validateLogin } from '../middlewares/validateLogin';
 import { User } from '@prisma/client';
 import { PostService } from '../services/postService';

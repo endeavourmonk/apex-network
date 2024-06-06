@@ -1,16 +1,27 @@
 import { Reaction } from '@prisma/client';
 
 export interface ReactionRepository {
-  getAll(postId?: number, userId?: number): Promise<Reaction[]>;
-  create(data: Reaction): Promise<Reaction>;
-  update(id: number, data: Reaction): Promise<Reaction | null>;
-  delete(id: number): Promise<Reaction>;
-  createAndIncrementPostReactionCount(
-    postId: number,
+  getAll(whereClause?: object): Promise<Reaction[]>;
+
+  update(
+    id: number,
+    authorId: number,
     data: Reaction,
-  ): Promise<boolean>;
-  deleteAndDecrementPostReactionCount(
+  ): Promise<Reaction | null>;
+
+  addPostReaction(data: Reaction): Promise<[Reaction, number]>;
+
+  removePostReaction(
     reactionId: number,
     postId: number,
+    authorId: number,
+  ): Promise<boolean>;
+
+  addCommentReaction(data: Reaction): Promise<[Reaction, number]>;
+
+  removeCommentReaction(
+    reactionId: number,
+    commentId: number,
+    authorId: number,
   ): Promise<boolean>;
 }

@@ -67,7 +67,7 @@ export class UserRepositoryPrisma implements UserRepository {
     return this.prisma.user.update({ where: { id }, data: user });
   }
 
-  delete(id: number): Promise<User> {
+  async delete(id: number): Promise<User> {
     return this.prisma.user.delete({ where: { id } });
   }
 }

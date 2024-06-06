@@ -20,6 +20,10 @@ import { ReactionRepository } from '../repositories/reactionRepository.interface
 import { ReactionRepositoryPrisma } from '../repositories/reactionRepositoryPrisma';
 import { IReactionService } from '../services/reactionService.interface';
 import { ReactionService } from '../services/reactionService';
+import { CommentRepository } from '../repositories/commentRepository.interface';
+import { CommentRepositoryPrisma } from '../repositories/commentRepositoryPrisma';
+import { ICommentService } from '../services/commentService.interface';
+import { CommentService } from '../services/commentService';
 
 // Prisma Client Setup
 container.register('PrismaClient', { useValue: new PrismaClient() });
@@ -69,4 +73,13 @@ container.register<ReactionRepository>('ReactionRepository', {
 
 container.register<IReactionService>('IReactionService', {
   useClass: ReactionService,
+});
+
+// Comment Setup
+container.register<CommentRepository>('CommentRepository', {
+  useClass: CommentRepositoryPrisma,
+});
+
+container.register<ICommentService>('ICommentService', {
+  useClass: CommentService,
 });

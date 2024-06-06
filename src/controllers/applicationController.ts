@@ -2,7 +2,7 @@ import express, { Request, Response, NextFunction } from 'express';
 import { container } from 'tsyringe';
 import { ApplicationService } from '../services/applicationService';
 import handleAsync from '../utils/handleAsync';
-import { AppError } from '../utils/error';
+import { AppError } from '../utils/AppError';
 import { validateLogin } from '../middlewares/validateLogin';
 
 const router = express.Router();
