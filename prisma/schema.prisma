@@ -39,7 +39,7 @@ model User {
   reactions Reaction[]
   comments  Comment[]
 
-  userSkill userSkill[]
+  userSkill UserSkill[]
 }
 
 enum Gender {
@@ -59,7 +59,7 @@ enum UserStatus {
   Inactive
 }
 
-model userSkill {
+model UserSkill {
   user    User  @relation(fields: [userId], references: [id])
   userId  Int
   skill   Skill @relation(fields: [skillId], references: [id])
@@ -161,7 +161,7 @@ model Skill {
   id        Int         @id @default(autoincrement())
   name      String      @db.VarChar(100)
   jobSkill  JobSkill[]
-  userSkill userSkill[]
+  userSkill UserSkill[]
 }
 
 model Job {

@@ -22,6 +22,11 @@ export class UserRepositoryPrisma implements UserRepository {
       where: { id },
       include: {
         posts: true,
+        userSkill: {
+          include: {
+            skill: true,
+          },
+        },
       },
     });
   }
