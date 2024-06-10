@@ -77,7 +77,6 @@ router.put(
       const authorId = req.user?.id;
       if (!authorId) return next(new AppError(400, `authorId not found.`));
       const updatedPost = await postService.update(postId, authorId, req?.body);
-      // console.log(req.body);
 
       res.status(200).json({
         data: {

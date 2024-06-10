@@ -9,12 +9,40 @@ export class CommentRepositoryPrisma implements CommentRepository {
   async getAll(whereClause?: object): Promise<Comment[]> {
     return this.prisma.comment.findMany({
       where: whereClause,
+      include: {
+        children: true,
+      },
     });
   }
 
   async getById(id: number): Promise<Comment | null> {
     return this.prisma.comment.findUnique({ where: { id } });
   }
+
+  // async createCommentAndIncrementCount(
+  //   data: Comment,
+  // ): Promise<[Comment, number]> {
+  //   try {
+  //     const [createdComment, updatedPost] = await this.prisma.$transaction(
+  //       [
+  //         // Create a new comment for the Post
+  //         this.prisma.comment.create({ data: data }),
+  //         // Increment the comment count for the corresponding Post
+  //         this.prisma.post.update({
+  //           where: { id: data.postId },
+  //           data: { commentCount: { increment: 1 } },
+  //         }),
+  //       ],
+  //       {
+  //         isolationLevel: Prisma.TransactionIsolationLevel.RepeatableRead,
+  //       },
+  //     );
+  //     return [createdComment, updatedPost.commentCount];
+  //   } catch (error) {
+  //     console.error('Error creating comment and updating post count:', error);
+  //     throw error;
+  //   }
+  // }
 
   async createCommentAndIncrementCount(
     data: Comment,

@@ -25,12 +25,11 @@ interface RequestWithUser extends Request {
  * /users/:userId/reactions
  */
 
+// PENDING: add more filtering and sorting
+
 router.get(
   '/',
   handleAsync(async (req: Request, res: Response, next: NextFunction) => {
-    // PENDING: add more filtering and sorting
-    // const queryObject = req.query;
-
     const filters = {
       postId: req.params?.postId && parseInt(req.params.postId),
       authorId: req.params?.userId && parseInt(req.params.userId),
@@ -172,21 +171,5 @@ router.delete(
     res.status(204).end();
   }),
 );
-
-// just to clean the table leave it as
-
-// router.delete('/deleteAll', async (req: Request, res: Response) => {
-//   try {
-//     console.log('delete');
-//     const prisma = new PrismaClient();
-//     await prisma.comment.deleteMany({
-//       where: {},
-//     });
-//     res.status(200).send('All reactions deleted successfully');
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).send('An error occurred while deleting reactions');
-//   }
-// });
 
 export default router;

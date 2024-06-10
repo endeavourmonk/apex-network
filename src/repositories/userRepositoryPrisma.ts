@@ -2,45 +2,12 @@ import { PrismaClient, User } from '@prisma/client';
 import { injectable, inject } from 'tsyringe';
 import { UserRepository } from './userRepository.interface';
 
-interface UserFilters {
-  name?: string;
-  username?: string;
-  createdAt?: string;
-  userLevel?: number;
-  userType?: string;
-}
-
-const createUserPrismaFilter = (filters: UserFilters) => {
-  const whereClause: { [key: string]: unknown } = {};
-
-  if (filters.name)
-    whereClause.name = {
-      startsWith: filters.name,
-      mode: 'insensitive',
-    };
-  if (filters.username)
-    whereClause.username = {
-      startsWith: filters.username,
-      mode: 'insensitive',
-    };
-  if (filters.createdAt) whereClause.createdAt = filters.createdAt;
-  if (filters.userLevel) whereClause.userLevel = Number(filters.userLevel);
-  if (filters.userType)
-    whereClause.userType = {
-      equals: filters.userType,
-    };
-
-  return whereClause;
-};
-
 @injectable()
 export class UserRepositoryPrisma implements UserRepository {
   constructor(@inject('PrismaClient') private prisma: PrismaClient) {}
 
-  async getAll(queryObject?: object): Promise<User[]> {
-    const whereClause = createUserPrismaFilter(queryObject!);
-    console.log('created filter', whereClause);
-
+  async getAll(whereClause: object): Promise<User[]> {
+    console.log(whereClause);
     return this.prisma.user.findMany({
       where: whereClause,
     });
