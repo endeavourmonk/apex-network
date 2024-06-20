@@ -1,4 +1,4 @@
-import { Job, Prisma, PrismaClient } from '@prisma/client';
+import { Job, JobSkill, Prisma, PrismaClient } from '@prisma/client';
 import { inject, injectable } from 'tsyringe';
 import { JobRepository } from '../repositories/jobRepository.interface';
 import { IJobService } from './jobService.interface';
@@ -21,7 +21,10 @@ export class JobService implements IJobService {
     return this.JobRepository.getById(jobId);
   }
 
-  async create(JobDetails: Job, skillIds: number[]): Promise<Job> {
+  async create(
+    JobDetails: Job,
+    skillIds: number[],
+  ): Promise<Job & { skills: JobSkill[] }> {
     try {
       const newJob = await this.prisma.$transaction(
         async (tx) => {
@@ -32,14 +35,22 @@ export class JobService implements IJobService {
             skillId,
           }));
 
-          await this.JobSkillRepository.addSkillsToJob(jobSkills, tx);
+          const skills = await this.JobSkillRepository.addSkillsToJob(
+            jobSkills,
+            tx,
+          );
 
-          return createdJob; // Return the created job from the transaction
+          const jobWithSkills = {
+            ...createdJob,
+            skills: skills,
+          };
+
+          return jobWithSkills;
         },
         {
           maxWait: 5000,
           timeout: 10000,
-          isolationLevel: Prisma.TransactionIsolationLevel.Serializable, // optional, default defined by database configuration
+          isolationLevel: Prisma.TransactionIsolationLevel.Serializable,
         },
       );
 
