@@ -66,6 +66,7 @@ model UserSkill {
   skillId Int
 
   @@id([userId, skillId])
+  @@unique([userId, skillId])
 }
 
 model Post {
@@ -173,7 +174,8 @@ model Job {
   locationType       String   @db.VarChar(50)
   experienceRequired String   @db.VarChar(100)
   salaryRange        String   @db.VarChar(100)
-  jobDate            DateTime
+  salaryCurrency     String   @default("INR") @db.VarChar(10)
+  postingDate        DateTime @default(now())
 
   author   User @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   authorId Int
@@ -189,6 +191,7 @@ model JobSkill {
   skillId Int
 
   @@id([jobId, skillId])
+  @@unique([jobId, skillId])
 }
 
 model Application {

@@ -24,6 +24,12 @@ import { CommentRepository } from '../repositories/commentRepository.interface';
 import { CommentRepositoryPrisma } from '../repositories/commentRepositoryPrisma';
 import { ICommentService } from '../services/commentService.interface';
 import { CommentService } from '../services/commentService';
+import { SkillRepository } from '../repositories/skillRepository.interface';
+import { SkillRepositoryPrisma } from '../repositories/skillRepositoryPrisma';
+import { JobSkillRepository } from '../repositories/jobSkillRepository.interface';
+import { JobSkillRepositoryPrisma } from '../repositories/jobSkillRepositoryPrisma';
+import { UserSkillRepository } from '../repositories/userSkillRepository.interface';
+import { UserSkillRepositoryPrisma } from '../repositories/userSkillRepositoryPrisma';
 
 // Prisma Client Setup
 container.register('PrismaClient', { useValue: new PrismaClient() });
@@ -37,6 +43,11 @@ container.register<IUserService>('IUserService', {
   useClass: UserService,
 });
 
+// UserSkill Setup
+container.register<UserSkillRepository>('UserSkillRepository', {
+  useClass: UserSkillRepositoryPrisma,
+});
+
 // Post Setup
 container.register<PostRepository>('PostRepository', {
   useClass: PostRepositoryPrisma,
@@ -46,6 +57,11 @@ container.register<IPostService>('IPostService', {
   useClass: PostService,
 });
 
+// Skill Setup
+container.register<SkillRepository>('SkillRepository', {
+  useClass: SkillRepositoryPrisma,
+});
+
 // Job Setup
 container.register<JobRepository>('JobRepository', {
   useClass: JobRepositoryPrisma,
@@ -53,6 +69,11 @@ container.register<JobRepository>('JobRepository', {
 
 container.register<IJobService>('IJobService', {
   useClass: JobService,
+});
+
+// JobSkill Setup
+container.register<JobSkillRepository>('JobSkillRepository', {
+  useClass: JobSkillRepositoryPrisma,
 });
 
 // Application Setup

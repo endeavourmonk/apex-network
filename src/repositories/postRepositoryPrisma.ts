@@ -53,9 +53,9 @@ export class PostRepositoryPrisma implements PostRepository {
   }
 
   async delete(id: number, authorId: number): Promise<boolean> {
-    const deletedPosts = await this.prisma.post.delete({
+    const deletedPost = await this.prisma.post.delete({
       where: { id, authorId },
     });
-    return !!deletedPosts;
+    return !!deletedPost;
   }
 }

@@ -1,4 +1,4 @@
-import { PrismaClient, JobSkill } from '@prisma/client';
+import { PrismaClient, JobSkill, Prisma } from '@prisma/client';
 import { injectable, inject } from 'tsyringe';
 import { JobSkillRepository } from './jobSkillRepository.interface';
 
@@ -6,15 +6,19 @@ import { JobSkillRepository } from './jobSkillRepository.interface';
 export class JobSkillRepositoryPrisma implements JobSkillRepository {
   constructor(@inject('PrismaClient') private prisma: PrismaClient) {}
 
-  async addSkillToJob(jobId: number, skillId: number): Promise<JobSkill> {
-    return this.prisma.jobSkill.create({
-      data: { jobId, skillId },
+  async addSkillsToJob(
+    jobSkills: JobSkill[],
+    prisma: Prisma.TransactionClient,
+  ): Promise<JobSkill[]> {
+    return prisma.jobSkill.createManyAndReturn({
+      data: jobSkills,
     });
   }
 
-  async removeSkillFromJob(jobId: number, skillId: number): Promise<JobSkill> {
-    return this.prisma.jobSkill.delete({
+  async removeSkillsFromJob(jobId: number, skillId: number): Promise<boolean> {
+    const deletedJobSkill = await this.prisma.jobSkill.delete({
       where: { jobId_skillId: { jobId, skillId } },
     });
+    return !!deletedJobSkill;
   }
 }

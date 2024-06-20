@@ -1,6 +1,9 @@
-import { JobSkill } from '@prisma/client';
+import { JobSkill, Prisma } from '@prisma/client';
 
 export interface JobSkillRepository {
-  addSkillToJob(jobId: number, skillId: number): Promise<JobSkill>;
-  removeSkillFromJob(jobId: number, skillId: number): Promise<JobSkill>;
+  addSkillsToJob(
+    jobSkills: JobSkill[],
+    prisma: Prisma.TransactionClient,
+  ): Promise<JobSkill[]>;
+  removeSkillsFromJob(jobId: number, skillId: number): Promise<boolean>;
 }
