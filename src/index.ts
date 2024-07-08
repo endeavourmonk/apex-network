@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import 'reflect-metadata';
 import express from 'express';
+import morgan from 'morgan';
 
 import './utils/tsyringe.config';
 
@@ -15,6 +16,12 @@ const app = express();
 const PORT = process.env.PORT ?? 3000;
 
 app.use(express.json({ limit: '10kb' }));
+
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev'));
+} else {
+  app.use(morgan('tiny'));
+}
 
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/posts', postRouter);
