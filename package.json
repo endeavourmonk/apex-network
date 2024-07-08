@@ -8,7 +8,8 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "build": "tsc --build",
+    "build": "yarn install && tsc --build",
+    "compile": "tsc --build",
     "start": " NODE_ENV=production node ./dist/index.js",
     "start:dev": "nodemon ./src/index.ts",
     "lint": "lint-staged",
