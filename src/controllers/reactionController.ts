@@ -66,8 +66,6 @@ router.put(
   handleAsync(
     async (req: RequestWithUser, res: Response, next: NextFunction) => {
       const authorId = req?.user?.id;
-      if (!authorId) return next(new AppError(400, `authorId is required `));
-
       const reactionId = parseInt(req.params.reactionId);
 
       const ReactionUpdateSchema = z.object({
@@ -85,7 +83,7 @@ router.put(
       const updateData = validatedData.data;
       const updatedReaction = await reactionService.update(
         reactionId,
-        authorId,
+        authorId!,
         updateData as Reaction,
       );
 

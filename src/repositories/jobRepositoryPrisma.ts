@@ -1,4 +1,4 @@
-import { PrismaClient, Job } from '@prisma/client';
+import { PrismaClient, Job, Prisma } from '@prisma/client';
 import { injectable, inject } from 'tsyringe';
 import { JobRepository } from './jobRepository.interface';
 
@@ -14,8 +14,8 @@ export class JobRepositoryPrisma implements JobRepository {
     return this.prisma.job.findUnique({ where: { id } });
   }
 
-  async create(Job: Job): Promise<Job> {
-    return this.prisma.job.create({ data: Job });
+  async create(Job: Job, prisma: Prisma.TransactionClient): Promise<Job> {
+    return prisma.job.create({ data: Job });
   }
 
   async update(id: number, Jobs: Job): Promise<Job | null> {
